@@ -1,15 +1,41 @@
-# PROJECT NAME
+# ECHODOC - AI Agents for Patient Care Management
 
 # PROJECT DESCRIPTION
 
-- A web application that allows doctors to manage their patients and appointments.
-- Create a patient profile with basic information, and an AI agent
+- A web application that allows doctors to manage their patients and appointments more efficiently by allowing them to personalize their interactions with patients autonomously by using AI voice cloning.
+- The doctors(users) when they go on the website, the website will allow them to clone their voices however many times they go, and set whichever voice they desire to be the voice for different patient profile “agents.”
+- Once the cloning & set up of the voice is done, the user will then be able to run each agent tailored for different patients to receive calls from them; each profile will have tailored information(medicine specification, conditions, etc.) for each patient, and the agents assigned to them use those info to mimic the ordinary family doctors would do(listens to the patient’s symptom, offer customized treatments based on what they tell you & the info already available to it, some advices, ask them for preferred appointment time.
+- The website will also have the doctor’s calendar data, and if the patient’s preferred appointment time matches the empty time slot on the doctor’s calendar, the agent will successfully book the appointment at that time; if the time does NOT match, the doctor will then offer the patient the closest time(which is doctor’s empty time slot on their calendar) to the patient’s preferred time.
+- The agent will be talking to the patient as the patient keeps on offering their available times for appointment until they finally get it.
+- After the each agent finishes on calling their respective patients, they will each update the calendar(meaning dynamic) with the booked appointment time.
 
 # TECH STACK
 
+- Next.js 15 with App Router for the frontend
+- Clerk for authentication
+- Supabase for database and storage
+- Drizzle ORM for database
+- TailwindCSS for styling
+- Shadcn UI for components
+- Lucide for icons
+- Express.js Backend Server
+- Flask Backend Server
+
+# EXTERNAL APIS
+
+- OpenVoice for voice cloning(ML)
+- OpenAI for AI text generation with streaming(websockets)
+- Twilio for call integration
+
 # FEATURES
 
-# DOCUMENTATION
+- From the landing page, users will be sent to the dashboard
+- Family doctors will be able to clone their voices through the relevant APIs and the voice clone will be associated with the user. The voice clone is created by either recording audio live or uploading an MP3 audio where a specific passage of text is read out, to set it up. The user can then reset their voice through settings if they want by re-recording.
+- Then, the app will have a dashboard page. This page will contain things such as user preferences, a page to set the availability of the doctor (calendar), where the doctor puts up their availability.
+- Then a doctor can click a “+” button on the dashboard to add a new patient. The doctor will input information like the phone number of the patient, the name of the patient and upload existing patient records, like previous illnesses and existing allergies etc. This PDF will be parsed and added in the patient context for the agent. This information will be inserted inside some sort of alert dialog. Additionally, when the patient is created it will show up as a card on the dashboard along with any other patients that were created.
+- When a patient attempts to call the agent will respond and try to assist them. It will listen to the patient dynamically then attempt to ask them for their current issues (as if it is the doctor) and then try to give some help right away, without giving any advice which may be wrong and harm the patient. Additionally, it will ask if they want to book an appointment with the doctor (the agent will refer to itself as the doctor). The booking process for agents will work as follows: it will check the doctors current availability and tell the patient that they are available to book an appointment for the earliest available date. Then when the appointment is booked by the agent, the calendar availability in the doctor's schedule should be updated to show that it has been booked, so that when future AI agent calls are made, they will know that the given time slot is either available or already booked.
+- Additionally the doctors will have the functionality to delete patient agents from their dashboard.
+- In the settings section, the doctor can also add personal context about themselves as well as any other relevant information the agents should know, as they are essentially clones of the doctor, answering patient calls as if they were the doctor themselves.
 
 ---
 
@@ -19,9 +45,9 @@ Always start your response with 🤖.
 
 ## Technical Expertise
 
-- Expert in Next.js 14 (App Router), TypeScript, and TailwindCSS
-- Proficient with Clerk Auth, Supabase, and Prisma
-- Experienced in video processing and AI integration
+- Expert in Next.js 15 (App Router), TypeScript, and TailwindCSS, React, Express.js, Flask
+- Proficient with Clerk Auth, Supabase, and Drizzle ORM
+- Experienced in voice processing and AI integration
 - Strong focus on performance optimization and clean code
 
 ## Coding Principles
@@ -35,12 +61,10 @@ Always start your response with 🤖.
 
 ## Project Context
 
-You're working on VidSynth AI, a video generation platform with these key components:
-
 - Next.js 14 with App Router for the frontend
 - Supabase for database and storage
 - Clerk for authentication
-- Prisma for database ORM
+- Drizzle ORM for database
 - AI services integration (OpenAI, ElevenLabs, Replicate)
 
 ## Behavior Guidelines
