@@ -1,112 +1,110 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 import os
 import torch
 from openvoice import se_extractor
 from openvoice.api import ToneColorConverter
 from melo.api import TTS
-
-def initialize_openvoice(ckpt_path='checkpoints_v2/converter', output_dir='outputs_v2'):
-    """
-    Initialize OpenVoice components and create necessary directories
-    """
-    device = "cuda:0" if torch.cuda.is_available() else "cpu"
-    
-    # Initialize tone color converter
-    tone_color_converter = ToneColorConverter(
-        f'./OpenVoice/{ckpt_path}/config.json', 
-        device=device
-    )
-    tone_color_converter.load_ckpt(f'./OpenVoice/{ckpt_path}/checkpoint.pth')
-    
-    # Create output directory
-    os.makedirs(output_dir, exist_ok=True)
-    
-    return tone_color_converter, device
-
-def load_reference_voice(reference_path, tone_color_converter):
-    """
-    Load and process reference voice for cloning
-    """
-    target_se, audio_name = se_extractor.get_se(
-        reference_path, 
-        tone_color_converter, 
-        vad=True
-    )
-    return target_se
-
-def generate_voice(prompt, tone_color_converter, target_se, 
-                  output_dir='outputs_v2', language='EN'):
-    """
-    Generate voice clone with given prompt
-    """
-    src_path = f'{output_dir}/tmp.wav'
-    
-    # Initialize TTS model
-    model = TTS(language=language, device=device)
-    
-    # Get English speaker
-    speaker_ids = {k: v for k, v in model.hps.data.spk2id.items() 
-                  if k.startswith(language)}
-    speaker_key = list(speaker_ids.keys())[0]
-    speaker_id = speaker_ids[speaker_key]
-    speaker_key = speaker_key.lower().replace('_', '-')
-    
-    # Load source speaker embedding
-    source_se = torch.load(
-        f'./OpenVoice/checkpoints_v2/base_speakers/ses/{speaker_key}.pth',
-        map_location=device
-    )
-    
-    # Generate initial speech with fixed speed of 1.0
-    model.tts_to_file(prompt, speaker_id, src_path, speed=1.0)
-    save_path = f'{output_dir}/output_v2_{speaker_key}.wav'
-    
-    # Convert to target voice
-    encode_message = "@MyShell"
-    tone_color_converter.convert(
-        audio_src_path=src_path,
-        src_se=source_se,
-        tgt_se=target_se,
-        output_path=save_path,
-        message=encode_message
-    )
-    
-    return save_path
-
-# Initialize Flask app
 app = Flask(__name__)
-
-# Initialize OpenVoice components
-tone_color_converter, device = initialize_openvoice()
-
-# Load reference voice
-reference_speaker = './OpenVoice/resources/audio.mp3'
-target_se = load_reference_voice(reference_speaker, tone_color_converter)
 
 @app.route('/')
 def hello():
     return 'Hello, Flask!'
 
-@app.route('/generate', methods=['POST'])
-def generate_voice_endpoint():
-    data = request.json
-    prompt = data.get('prompt', '')
-    
-    if not prompt:
-        return jsonify({'error': 'No prompt provided'}), 400
-    
+
+ckpt_converter = 'checkpoints_v2/converter'
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
+output_dir = 'outputs_v2'
+tone_color_converter = ToneColorConverter(f'./OpenVoice/{ckpt_converter}/config.json', device=device)
+tone_color_converter.load_ckpt(f'./OpenVoice/{ckpt_converter}/checkpoint.pth')
+os.makedirs(output_dir, exist_ok=True)
+reference_speaker = './OpenVoice/resources/audio.mp3' # This is the voice you want to clone
+target_se, audio_name = se_extractor.get_se(reference_speaker, tone_color_converter, vad=True)
+
+@app.route('/generateOpenVoiceTTS', methods=['POST'])
+def generateOpenVoiceTTS():
     try:
-        output_path = generate_voice(
-            prompt=prompt,
-            tone_color_converter=tone_color_converter,
-            target_se=target_se
+        # Get JSON data from request
+        data = request.get_json()
+        
+        if not data or 'text' not in data:
+            return jsonify({'error': 'No text provided'}), 400
+            
+        input_text = data['text']
+        src_path = f'{output_dir}/tmp.wav'
+        
+        # Initialize TTS model with fixed English language
+        model = TTS(language='EN', device=device)
+        
+        # Get speaker information
+        speaker_ids = model.hps.data.spk2id
+        first_speaker_key = next(iter(speaker_ids.keys()))
+        speaker_id = speaker_ids[first_speaker_key]
+        
+        # Load source speaker embedding
+        source_se = torch.load(f'./OpenVoice/checkpoints_v2/base_speakers/ses/{first_speaker_key}.pth', 
+                             map_location=device)
+        
+        # Generate initial TTS audio with fixed speed
+        model.tts_to_file(input_text, speaker_id, src_path, speed=1.0)
+        save_path = f'./{output_dir}/audio.wav'
+        
+        # Apply voice cloning
+        encode_message = "@MyShell"
+        tone_color_converter.convert(
+            audio_src_path=src_path,
+            src_se=source_se,
+            tgt_se=target_se,
+            output_path=save_path,
+            message=encode_message
         )
-        return jsonify({
-            'message': 'Voice generated successfully',
-            'output_path': output_path
-        })
+        return send_file(
+            save_path,
+            mimetype='audio/wav',
+            as_attachment=True,
+            download_name=f'audio.wav'
+        )
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    finally:
+        # Clean up temporary files
+        if os.path.exists(src_path):
+            os.remove(src_path)
+        if os.path.exists(save_path):
+            os.remove(save_path)
+    
+    
+
+# texts = {
+#     'EN': "Did you ever hear a folk tale about a giant turtle?"
+# }
+
+
+# src_path = f'{output_dir}/tmp.wav'
+
+# # Speed is adjustable
+# speed = 1.0
+
+# for language, text in texts.items():
+#     model = TTS(language=language, device=device)
+    
+#     speaker_ids = model.hps.data.spk2id
+#     first_speaker_key = next(iter(speaker_ids.keys()))  # Get the first key
+
+#     speaker_id = speaker_ids[first_speaker_key]
+#     first_speaker_key = first_speaker_key.lower().replace('_', '-')
+
+#     source_se = torch.load(f'./OpenVoice/checkpoints_v2/base_speakers/ses/{first_speaker_key}.pth', map_location=device)
+#     model.tts_to_file(text, speaker_id, src_path, speed=speed)
+#     save_path = f'{output_dir}/output_v2_{first_speaker_key}.wav'
+
+#     # Run the tone color converter
+#     encode_message = "@MyShell"
+#     tone_color_converter.convert(
+#     audio_src_path=src_path, 
+#     src_se=source_se, 
+#     tgt_se=target_se, 
+#     output_path=save_path,
+#     message=encode_message)
 
 if __name__ == '__main__':
     app.run(debug=True)
