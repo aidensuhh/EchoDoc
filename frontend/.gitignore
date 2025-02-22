@@ -44,3 +44,6 @@ next-env.d.ts
 .env
 
 backend/flask-server/venv/
+
+# clerk configuration (can include secrets)
+/.clerk/
