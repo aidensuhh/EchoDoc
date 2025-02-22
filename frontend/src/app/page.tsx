@@ -170,7 +170,7 @@ export default function Home() {
             ))}
             <ThemeToggle />
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/sign-in">
+              <Link href="/dashboard">
                 <Button variant="outline">Login</Button>
               </Link>
             </motion.div>
