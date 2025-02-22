@@ -6,23 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { motion } from "framer-motion";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
 import { BentoGrid, BentoCard } from "@/components/ui/bento-grid";
-import {
-  Brain,
-  Calendar,
-  FileText,
-  Mic2,
-  Phone,
-  Shield,
-  Stethoscope,
-  UserCog,
-  Users,
-} from "lucide-react";
+import { Brain, Calendar, FileText, Mic2, Phone, UserCog } from "lucide-react";
+import Bento from "@/components/Bento";
+import { Footer } from "@/components/footer";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -170,7 +157,7 @@ export default function Home() {
             ))}
             <ThemeToggle />
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/dashboard">
+              <Link href="/sign-in">
                 <Button variant="outline">Login</Button>
               </Link>
             </motion.div>
@@ -210,7 +197,7 @@ export default function Home() {
                   size="lg"
                   className="bg-foreground text-background hover:bg-foreground/90"
                 >
-                  Talk to ECHODOC
+                  Talk to EchoDoc
                 </Button>
               </motion.div>
               <motion.div
@@ -279,47 +266,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Bento Grid Section */}
-      <section className="py-24 bg-background">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-            className="space-y-8"
-          >
-            <motion.div
-              variants={fadeIn}
-              className="text-center max-w-2xl mx-auto mb-16"
-            >
-              <h2 className="text-3xl font-fraunces mb-4">
-                Comprehensive Feature Set
-              </h2>
-              <p className="text-muted-foreground">
-                Everything you need to revolutionize your patient care
-                management system
-              </p>
-            </motion.div>
-            <motion.div variants={fadeIn}>
-              <BentoGrid>
-                {bentoFeatures.map((feature) => (
-                  <BentoCard
-                    key={feature.name}
-                    name={feature.name}
-                    description={feature.description}
-                    Icon={feature.Icon}
-                    className={feature.className}
-                    href={feature.href}
-                    cta={feature.cta}
-                    background={feature.background}
-                  />
-                ))}
-              </BentoGrid>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
+      <Bento staggerContainer={staggerContainer} fadeIn={fadeIn} />
+      <Footer />
     </div>
   );
 }

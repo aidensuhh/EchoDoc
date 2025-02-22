@@ -2,14 +2,12 @@ import type { Metadata } from "next";
 import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Footer } from "@/components/footer";
-import { ClerkProvider } from '@clerk/nextjs';
-
+import { ClerkProvider } from "@clerk/nextjs";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces" });
 
 export const metadata: Metadata = {
-  title: "ECHODOC - AI Patient Care Management",
+  title: "EchoDoc - AI Patient Care Management",
   description:
     "AI-powered patient care management system with voice cloning technology",
 };
@@ -36,7 +34,6 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <main className="flex-1">{children}</main>
-            <Footer />
           </ThemeProvider>
         </body>
       </html>
