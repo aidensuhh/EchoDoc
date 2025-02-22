@@ -3,3 +3,5 @@ backend/flask-server/openvoice-env/
 
 backend/flask-server/OpenVoice/checkpoints_v2
 /backend/flask-server/OpenVoice/checkpoints_v2
+/backend/flask-server/OpenVoice/openvoice/__pycache__
+
