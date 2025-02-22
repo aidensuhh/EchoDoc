@@ -11,7 +11,7 @@ import nodemailer from "nodemailer";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { readFile } from "fs/promises";
-
+import multer from "multer";
 // Import GPT services
 import GptService from "./ai-agent/services/gpt-service.js";
 import StreamService from "./ai-agent/services/stream-service.js"; // Changed to default import
@@ -21,7 +21,7 @@ import TextToSpeechService from "./ai-agent/services/tts-service.js";
 const app = express();
 const wsInstance = expressWs(app);
 
-// Middleware
+// Middleware 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -92,39 +92,6 @@ app.get("/api/callStatus", (req, res) => {
   res.json({
     status: callStatus === "completed" ? "completed" : "pending",
   });
-});
-
-app.post("/set-voice", (req, res) => {
-  const { trustedIndividual } = req.body;
-
-  const VoiceModels = {
-    1: "aura-asteria-en",
-    2: "aura-luna-en",
-    3: "aura-stella-en",
-    4: "aura-arcas-en",
-    5: "aura-angus-en",
-    6: "aura-helios-en",
-  };
-
-  const voiceNumber = parseInt(trustedIndividual.match(/\d+/)?.[0], 10);
-
-  console.log("Received data:");
-  console.log("Trusted Individual:", trustedIndividual);
-  const selectedVoiceModel = VoiceModels[voiceNumber];
-
-  global.voiceModel = selectedVoiceModel;
-
-  res.status(200).send({ message: "Voice set successfully!" });
-});
-
-
-// GET endpoint to retrieve the saved user data
-app.get("/getUserName", (req, res) => {
-  if (userName) {
-    res.json({ name: userName });
-  } else {
-    res.status(404).send({ message: "User data not found." });
-  }
 });
 
 // GPT Voice Routes
@@ -264,6 +231,35 @@ app.ws("/connection", (ws) => {
     cleanup();
     ws.close(1011, "Internal server error");
   });
+});
+
+
+
+// Configure multer for audio file storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "../flask-server/OpenVoice/resources"); // Make sure this directory exists
+  },
+  filename: function (req, file, cb) {
+    cb(null, 'audio-' + Date.now() + '.wav')
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// Add this endpoint to your Express routes
+app.post('/api/upload-audio', upload.single('audio'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+    res.json({ 
+      message: 'File uploaded successfully',
+      filename: req.file.filename 
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Start Server

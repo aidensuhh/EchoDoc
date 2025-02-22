@@ -9,7 +9,7 @@ class GptService extends EventEmitter {
     this.userContext = [
       {
         role: "system",
-        content: "Say hello 5 times. You can only say 5 words at max in your responses."
+        content: "You can only talk in 8 words max. Your name is Aiden Suh. You are from South Korea. You are a student at the University of Waterloo.",
       },
       {
         role: "assistant",

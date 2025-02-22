@@ -1,273 +1,169 @@
-"use client";
+"use client"
 
-import Image from "next/image";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { motion } from "framer-motion";
-import { BentoGrid, BentoCard } from "@/components/ui/bento-grid";
-import { Brain, Calendar, FileText, Mic2, Phone, UserCog } from "lucide-react";
-import Bento from "@/components/Bento";
-import { Footer } from "@/components/footer";
+import { useRef, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Mic, StopCircle, Upload } from "lucide-react"
+import { useToast } from "@/components/ui/use-toast"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-    },
-  },
-};
+export default function AudioRecorderOnboarding() {
+  const [permission, setPermission] = useState<boolean>(false)
+  const [isRecording, setIsRecording] = useState<boolean>(false)
+  const [isUploading, setIsUploading] = useState<boolean>(false)
+  const [uploadStatus, setUploadStatus] = useState<string>("")
+  const mediaStream = useRef<MediaStream | null>(null)
+  const mediaRecorder = useRef<MediaRecorder | null>(null)
+  const chunks = useRef<Blob[]>([])
+  const [audioURL, setAudioURL] = useState<string>("")
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
+  const { toast } = useToast()
 
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.3,
-    },
-  },
-};
+  const getMicrophonePermission = async (): Promise<void> => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      setPermission(true)
+      mediaStream.current = stream
+      toast({
+        title: "Microphone Access Granted",
+        description: "You can now start recording audio.",
+      })
+    } catch (error) {
+      console.error("Error accessing microphone:", error)
+      toast({
+        title: "Error",
+        description: "Failed to access microphone. Please check your permissions.",
+        variant: "destructive",
+      })
+    }
+  }
 
-const bentoFeatures = [
-  {
-    name: "Voice Cloning Technology",
-    description:
-      "Create perfect digital replicas of your voice for consistent and personalized patient interactions.",
-    Icon: Mic2,
-    className: "md:col-span-2",
-    href: "/features/voice-cloning",
-    cta: "Learn about voice cloning",
-    background: (
-      <div className="absolute inset-0 flex items-center justify-center opacity-10">
-        <Mic2 className="w-72 h-72" />
-      </div>
-    ),
-  },
-  {
-    name: "Smart Patient Routing",
-    description:
-      "AI-powered system that intelligently directs patient calls to the right department or specialist.",
-    Icon: Phone,
-    className: "md:col-span-1",
-    href: "/features/patient-routing",
-    cta: "Explore routing system",
-    background: (
-      <div className="absolute inset-0 flex items-center justify-center opacity-10">
-        <Phone className="w-40 h-40" />
-      </div>
-    ),
-  },
-  {
-    name: "Automated Scheduling",
-    description:
-      "Real-time calendar synchronization with smart conflict resolution and optimal time slot suggestions.",
-    Icon: Calendar,
-    className: "md:col-span-1",
-    href: "/features/scheduling",
-    cta: "See it in action",
-    background: (
-      <div className="absolute inset-0 flex items-center justify-center opacity-10">
-        <Calendar className="w-72 h-72" />
-      </div>
-    ),
-  },
-  {
-    name: "Medical History Analysis",
-    description:
-      "Advanced processing of patient records to provide contextual information during interactions.",
-    Icon: FileText,
-    className: "md:col-span-2",
-    href: "/features/medical-history",
-    cta: "View capabilities",
-    background: (
-      <div className="absolute inset-0 flex items-center justify-center opacity-10">
-        <FileText className="w-56 h-56" />
-      </div>
-    ),
-  },
-  {
-    name: "AI-Powered Diagnosis Support",
-    description:
-      "Assist in preliminary symptom assessment and provide relevant medical information.",
-    Icon: Brain,
-    className: "md:col-span-2",
-    href: "/features/ai-diagnosis",
-    cta: "Discover AI features",
-    background: (
-      <div className="absolute inset-0 flex items-center justify-center opacity-10">
-        <Brain className="w-40 h-40" />
-      </div>
-    ),
-  },
-  {
-    name: "Patient Profile Management",
-    description:
-      "Comprehensive dashboard for managing patient information, preferences, and interaction history.",
-    Icon: UserCog,
-    className: "md:col-span-1",
-    href: "/features/profile-management",
-    cta: "View dashboard",
-    background: (
-      <div className="absolute inset-0 flex items-center justify-center opacity-10">
-        <UserCog className="w-72 h-72" />
-      </div>
-    ),
-  },
-];
+  const startRecording = (): void => {
+    if (!mediaStream.current) {
+      console.error("No media stream available")
+      return
+    }
 
-export default function Home() {
+    setIsRecording(true)
+    setAudioURL("")
+    setUploadStatus("")
+    chunks.current = []
+
+    mediaRecorder.current = new MediaRecorder(mediaStream.current)
+    mediaRecorder.current.ondataavailable = (e: BlobEvent) => {
+      if (e.data.size > 0) {
+        chunks.current.push(e.data)
+      }
+    }
+    mediaRecorder.current.start()
+  }
+
+  const stopRecording = (): void => {
+    if (!mediaRecorder.current) {
+      console.error("No media recorder available")
+      return
+    }
+
+    setIsRecording(false)
+    mediaRecorder.current.onstop = () => {
+      const blob = new Blob(chunks.current, { type: "audio/wav" })
+      const audioUrl = URL.createObjectURL(blob)
+      setAudioURL(audioUrl)
+      setAudioBlob(blob)
+    }
+    mediaRecorder.current.stop()
+  }
+
+  const uploadAudio = async (): Promise<void> => {
+    if (!audioBlob) return
+
+    try {
+      setIsUploading(true)
+      const formData = new FormData()
+      formData.append("audio", audioBlob, "recording.wav")
+
+      const response = await fetch("http://localhost:5500/api/upload-audio", {
+        method: "POST",
+        body: formData,
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setUploadStatus("Upload successful!")
+        toast({
+          title: "Upload Successful",
+          description: "Your audio has been saved.",
+        })
+      } else {
+        setUploadStatus("Upload failed: " + data.error)
+        toast({
+          title: "Upload Failed",
+          description: data.error,
+          variant: "destructive",
+        })
+      }
+    } catch (error: any) {
+      setUploadStatus("Upload failed: " + error.message)
+      toast({
+        title: "Upload Failed",
+        description: error.message,
+        variant: "destructive",
+      })
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
   return (
-    <div className="bg-background">
-      {/* Navigation */}
-      <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ type: "spring", stiffness: 100 }}
-        className="fixed w-full top-0 bg-background/80 backdrop-blur-sm z-50 border-b"
-      >
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center"
-          >
-            <Link href="/" className="text-2xl font-bold">
-              ECHODOC
-            </Link>
-          </motion.div>
-          <div className="hidden md:flex items-center space-x-8">
-            {["Company", "Blog", "Demo"].map((item) => (
-              <motion.div
-                key={item}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link
-                  href={`/${item.toLowerCase()}`}
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {item}
-                </Link>
-              </motion.div>
-            ))}
-            <ThemeToggle />
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/sign-in">
-                <Button variant="outline">Login</Button>
-              </Link>
-            </motion.div>
-          </div>
-        </div>
-      </motion.nav>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
+      <h1 className="text-5xl font-bold mb-12 text-center">Let's get started...</h1>
 
-      {/* Hero Section */}
-      <main className="pt-32 pb-16">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-            className="max-w-4xl mx-auto text-center"
-          >
-            <motion.h1
-              variants={fadeIn}
-              className="text-6xl font-serif mb-6 font-fraunces"
-            >
-              The Ultimate AI Suite for Patient Care Management
-            </motion.h1>
-            <motion.p
-              variants={fadeIn}
-              className="text-xl text-muted-foreground mb-8"
-            >
-              AI that handles patient calls, appointments, and reporting for
-              your practice. From service booking to patient care, and
-              everything in between.
-            </motion.p>
-            <motion.div variants={fadeIn} className="flex justify-center gap-4">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+      <Card className="w-full max-w-md">
+        <CardContent className="pt-6 space-y-6">
+          {!permission ? (
+            <Button onClick={getMicrophonePermission} className="w-full" size="lg">
+              <Mic className="mr-2 h-5 w-5" /> Get Microphone Access
+            </Button>
+          ) : (
+            <>
+              <Button
+                onClick={isRecording ? stopRecording : startRecording}
+                variant={isRecording ? "destructive" : "default"}
+                className="w-full"
+                size="lg"
               >
-                <Button
-                  size="lg"
-                  className="bg-foreground text-background hover:bg-foreground/90"
-                >
-                  Talk to EchoDoc
-                </Button>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button size="lg" variant="outline">
-                  Book a Demo →
-                </Button>
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </main>
+                {isRecording ? (
+                  <>
+                    <StopCircle className="mr-2 h-5 w-5" /> Stop Recording
+                  </>
+                ) : (
+                  <>
+                    <Mic className="mr-2 h-5 w-5" /> Start Recording
+                  </>
+                )}
+              </Button>
 
-      {/* Features Section */}
-      <section className="py-16 bg-muted/50">
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-3xl font-fraunces text-center mb-8"
-        >
-          Our Core Services
-        </motion.h1>
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-            className="grid md:grid-cols-3 gap-8"
-          >
-            {[
-              {
-                title: "Voice Cloning",
-                description:
-                  "Clone your voice for personalized patient interactions, maintaining your unique connection with each patient.",
-              },
-              {
-                title: "Smart Scheduling",
-                description:
-                  "Automated appointment booking that syncs with your calendar in real-time.",
-              },
-              {
-                title: "Patient Management",
-                description:
-                  "Comprehensive patient profiles with medical history, preferences, and interaction logs.",
-              },
-            ].map((feature) => (
-              <motion.div
-                key={feature.title}
-                variants={fadeIn}
-                whileHover={{ y: -5 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <Card className="p-6 h-full border border-border/50 hover:border-border transition-colors">
-                  <h3 className="text-xl font-semibold mb-3">
-                    {feature.title}
-                  </h3>
-                  <p className="text-muted-foreground">{feature.description}</p>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+              {audioURL && (
+                <div className="space-y-4">
+                  <audio src={audioURL} controls className="w-full" />
+                  <Button onClick={uploadAudio} disabled={isUploading} className="w-full" size="lg">
+                    <Upload className="mr-2 h-5 w-5" />
+                    {isUploading ? "Uploading..." : "Save Recording"}
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
 
-      <Bento staggerContainer={staggerContainer} fadeIn={fadeIn} />
-      <Footer />
+          {uploadStatus && (
+            <Alert variant={uploadStatus.includes("failed") ? "destructive" : "default"}>
+              <AlertDescription>{uploadStatus}</AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
     </div>
-  );
+  )
 }
+
