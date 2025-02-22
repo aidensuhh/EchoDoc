@@ -10,6 +10,7 @@
 !.yarn/releases
 !.yarn/versions
 
+
 # testing
 /coverage
 
@@ -33,17 +34,33 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+
+
+
 # vercel
 .vercel
+/backend/flask-server/openvoice-env
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
-
+backend/flask-server/openvoice-env
 .env
 
 backend/flask-server/venv/
 
+# Python virtual environments
+venv/
+**/venv/
+**/openvoice-env/
+
+
+
+
+
+
 # clerk configuration (can include secrets)
 /.clerk/
+
+
