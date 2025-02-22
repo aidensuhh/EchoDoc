@@ -148,3 +148,5 @@ fly.toml
 
 .env
 env
+
+backend/flask-server/openvoice-env

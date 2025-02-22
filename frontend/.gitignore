@@ -40,7 +40,14 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-
+backend/flask-server/openvoice-env
 .env
 
 backend/flask-server/venv/
+/backend/flask-server/openvoice-env
+
+
+# Python virtual environments
+venv/
+**/venv/
+**/openvoice-env/
