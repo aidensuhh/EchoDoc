@@ -1,3 +1,5 @@
+"use client";
+
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
@@ -13,8 +15,58 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { PatientAgentCard } from "@/components/PatientAgentCard";
+import { Card, CardContent } from "@/components/ui/card";
+import { Plus } from "lucide-react";
+import { useState } from "react";
+
+// Define the Patient type
+interface Patient {
+  id: string;
+  name: string;
+  avatarUrl?: string;
+  lastCall?: string;
+  nextAppointment?: string;
+  status: "active" | "inactive" | "calling";
+  phoneNumber: string;
+}
 
 export default function Page() {
+  // Sample data - replace with actual data fetching
+  const [patients, setPatients] = useState<Patient[]>([
+    {
+      id: "1",
+      name: "John Doe",
+      phoneNumber: "+1 (555) 123-4567",
+      status: "active",
+      lastCall: "2024-03-15 14:30",
+      nextAppointment: "2024-03-20 10:00",
+    },
+    // Add more sample patients as needed
+  ]);
+
+  const handleDeletePatient = (id: string) => {
+    setPatients(patients.filter(patient => patient.id !== id));
+  };
+
+  const handleStartAgent = (id: string) => {
+    setPatients(patients.map(patient => 
+      patient.id === id 
+        ? { ...patient, status: patient.status === "calling" ? "active" : "calling" }
+        : patient
+    ));
+  };
+
+  const handleViewDetails = (id: string) => {
+    // Implement navigation to patient details page
+    console.log("View details for patient:", id);
+  };
+
+  const handleAddPatient = () => {
+    // Implement add patient logic
+    console.log("Add new patient");
+  };
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -26,13 +78,11 @@ export default function Page() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                  <BreadcrumbPage>Patient Agents</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -40,9 +90,25 @@ export default function Page() {
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
+            {patients.map((patient) => (
+              <PatientAgentCard
+                key={patient.id}
+                patient={patient}
+                onDelete={handleDeletePatient}
+                onCall={handleStartAgent}
+                onViewDetails={handleViewDetails}
+              />
+            ))}
+            
+            <Card 
+              className="flex h-[200px] cursor-pointer items-center justify-center align-items hover:bg-accent/50 transition-colors"
+              onClick={handleAddPatient}
+            >
+              <CardContent className="flex flex-col items-center gap-2 text-muted-foreground">
+                <Plus className="h-8 w-8" />
+                <p>Add New Patient</p>
+              </CardContent>
+            </Card>
           </div>
           <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
         </div>
