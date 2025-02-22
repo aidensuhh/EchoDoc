@@ -3,75 +3,110 @@ import os
 import torch
 from openvoice import se_extractor
 from openvoice.api import ToneColorConverter
+from melo.api import TTS
 
+def initialize_openvoice(ckpt_path='checkpoints_v2/converter', output_dir='outputs_v2'):
+    """
+    Initialize OpenVoice components and create necessary directories
+    """
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    
+    # Initialize tone color converter
+    tone_color_converter = ToneColorConverter(
+        f'./OpenVoice/{ckpt_path}/config.json', 
+        device=device
+    )
+    tone_color_converter.load_ckpt(f'./OpenVoice/{ckpt_path}/checkpoint.pth')
+    
+    # Create output directory
+    os.makedirs(output_dir, exist_ok=True)
+    
+    return tone_color_converter, device
+
+def load_reference_voice(reference_path, tone_color_converter):
+    """
+    Load and process reference voice for cloning
+    """
+    target_se, audio_name = se_extractor.get_se(
+        reference_path, 
+        tone_color_converter, 
+        vad=True
+    )
+    return target_se
+
+def generate_voice(prompt, tone_color_converter, target_se, 
+                  output_dir='outputs_v2', language='EN'):
+    """
+    Generate voice clone with given prompt
+    """
+    src_path = f'{output_dir}/tmp.wav'
+    
+    # Initialize TTS model
+    model = TTS(language=language, device=device)
+    
+    # Get English speaker
+    speaker_ids = {k: v for k, v in model.hps.data.spk2id.items() 
+                  if k.startswith(language)}
+    speaker_key = list(speaker_ids.keys())[0]
+    speaker_id = speaker_ids[speaker_key]
+    speaker_key = speaker_key.lower().replace('_', '-')
+    
+    # Load source speaker embedding
+    source_se = torch.load(
+        f'./OpenVoice/checkpoints_v2/base_speakers/ses/{speaker_key}.pth',
+        map_location=device
+    )
+    
+    # Generate initial speech with fixed speed of 1.0
+    model.tts_to_file(prompt, speaker_id, src_path, speed=1.0)
+    save_path = f'{output_dir}/output_v2_{speaker_key}.wav'
+    
+    # Convert to target voice
+    encode_message = "@MyShell"
+    tone_color_converter.convert(
+        audio_src_path=src_path,
+        src_se=source_se,
+        tgt_se=target_se,
+        output_path=save_path,
+        message=encode_message
+    )
+    
+    return save_path
+
+# Initialize Flask app
 app = Flask(__name__)
+
+# Initialize OpenVoice components
+tone_color_converter, device = initialize_openvoice()
+
+# Load reference voice
+reference_speaker = './OpenVoice/resources/audio.mp3'
+target_se = load_reference_voice(reference_speaker, tone_color_converter)
 
 @app.route('/')
 def hello():
     return 'Hello, Flask!'
 
-@app.route('/convert', methods=['GET'])
-def convert():
-    text = request.args.get('text', 'Hello World')
+@app.route('/generate', methods=['POST'])
+def generate_voice_endpoint():
+    data = request.json
+    prompt = data.get('prompt', '')
+    
+    if not prompt:
+        return jsonify({'error': 'No prompt provided'}), 400
     
     try:
-        # Set up the configuration path and create the converter with it.
-        config_path = os.path.join(os.getcwd(), "config", "config.json")
-        converter = ToneColorConverter(config_path)
-        result = converter.convert(text)
+        output_path = generate_voice(
+            prompt=prompt,
+            tone_color_converter=tone_color_converter,
+            target_se=target_se
+        )
+        return jsonify({
+            'message': 'Voice generated successfully',
+            'output_path': output_path
+        })
     except Exception as e:
-        print("An error occurred:", e)
-        return jsonify({"error": str(e)}), 500
-
-    return jsonify({"input": text, "result": result})
-
-@app.route('/extract', methods=['GET'])
-def extract():
-    file_path = request.args.get('file', 'sample.wav')
-    
-    try:
-        features = se_extractor.extract_features(file_path)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-    return jsonify({"file": file_path, "features": features})
-
-@app.route('/clone', methods=['POST'])
-def clone_voice():
-    """
-    Expects a multipart/form-data POST request with:
-    - 'audio': the reference audio file
-    - 'text': (optional) text to say using the cloned voice (default: "Hello World")
-    """
-    if 'audio' not in request.files:
-        return jsonify({"error": "No audio file provided"}), 400
-    
-    audio_file = request.files['audio']
-    text = request.form.get('text', 'Hello World')
-    temp_audio_path = os.path.join(os.getcwd(), 'temp_audio.wav')
-    
-    try:
-        # Save the uploaded audio file temporarily.
-        audio_file.save(temp_audio_path)
-        
-        # Extract speaker embedding/features from the reference audio.
-        speaker_embedding = se_extractor.extract_features(temp_audio_path)
-        
-        # Set up the converter using your config.
-        config_path = os.path.join(os.getcwd(), "config", "config.json")
-        converter = ToneColorConverter(config_path)
-        
-        # Generate speech with the cloned voice.
-        # Note: We assume that the clone_voice method exists and takes text and speaker_embedding.
-        result = converter.clone_voice(text, speaker_embedding)
-    except Exception as e:
-        print("An error occurred during voice cloning:", e)
-        return jsonify({"error": str(e)}), 500
-    finally:
-        if os.path.exists(temp_audio_path):
-            os.remove(temp_audio_path)
-    
-    return jsonify({"text": text, "result": result})
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
