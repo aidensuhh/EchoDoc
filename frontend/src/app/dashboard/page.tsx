@@ -82,14 +82,31 @@ export default function Page() {
       const patientData = await patientResponse.json();
       console.log(patientResponse);
 
+      const selected_voice = await fetch(
+        `http://localhost:5500/api/get-selected-voice`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const voice_id = await selected_voice.json();
+
       // Start the consultation call
       const callResponse = await fetch("http://localhost:5500/api/call", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(patientData),
+        body: JSON.stringify({
+          voice_id: voice_id,
+          data: patientData
+        }),
       });
+
+      
       console.log(JSON.stringify(patientData));
 
       if (!callResponse.ok) {

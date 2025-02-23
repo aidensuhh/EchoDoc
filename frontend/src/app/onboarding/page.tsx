@@ -92,28 +92,40 @@ export default function OnboardingPage() {
       return;
     }
 
-   try {
-     const formData = new FormData();
-     formData.append("file", recordedBlob, ".wav");
-     formData.append("name", name);
-     const response = await fetch("http://localhost:5500/api/clone-voice", {
-       method: "POST",
-       body: formData,
-     });
+    try {
+      const formData = new FormData();
+      formData.append("file", recordedBlob, ".wav");
+      formData.append("name", name);
 
-     if (!response.ok) {
-       throw new Error("Failed to upload audio");
-     }
+      const response = await fetch("http://localhost:5500/api/clone-voice", {
+        method: "POST",
+        body: formData,
+      });
 
-     const data = await response.json();
-     console.log("Upload successful:", data);
+      if (!response.ok) {
+        throw new Error("Failed to upload audio");
+      }
 
-     // Use Next.js router to redirect to dashboard
-     router.push("/dashboard");
-   } catch (error) {
-     console.error("Error uploading audio:", error);
-     alert("Failed to upload audio. Please try again.");
-   }
+      const responseData = await response.json();
+
+      const selectedVoice = await fetch(
+        "http://localhost:5500/api/selected-voice",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ voiceId: responseData.voiceId }),
+        }
+      );
+
+      // const data = await response.json();
+      // console.log("Upload successful:", data);
+
+      // Use Next.js router to redirect to dashboard
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Error uploading audio:", error);
+      alert("Failed to upload audio. Please try again.");
+    }
   };
 
   return (

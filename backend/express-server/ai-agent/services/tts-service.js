@@ -6,15 +6,15 @@ import fetch from "node-fetch";
 dotenv.config();
 
 class TextToSpeechService extends EventEmitter {
-  constructor() {
+  constructor(voiceId) {
     super();
+    this.voiceId =
+      voiceId || process.env.ELEVENLABS_VOICE_ID || "9vhe33SF3SeQLrvq158t";
     this.nextExpectedIndex = 0;
     this.speechBuffer = {};
     this.baseUrl = "https://api.elevenlabs.io/v1/text-to-speech";
   }
 
-
-  
   async generate(gptReply, interactionCount) {
     const { partialResponseIndex, partialResponse } = gptReply;
 
@@ -24,7 +24,7 @@ class TextToSpeechService extends EventEmitter {
 
     try {
       const response = await fetch(
-        `${this.baseUrl}/${process.env.ELEVENLABS_VOICE_ID || '9vhe33SF3SeQLrvq158t'}?output_format=ulaw_8000`,
+        `${this.baseUrl}/${this.voiceId}?output_format=ulaw_8000`,
         {
           method: "POST",
           headers: {

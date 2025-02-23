@@ -123,6 +123,7 @@ const bentoFeatures = [
 export default function Home() {
   return (
     <div className="bg-background">
+      
       {/* Navigation */}
       <motion.nav
         initial={{ y: -100 }}

@@ -44,6 +44,8 @@ const PORT = process.env.PORT || 5000;
 
 // Initialize Twilio client
 let gptService = new GptService();
+let ttsService = new TextToSpeechService({});
+
 const client = twilio(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
@@ -68,7 +70,9 @@ function generateTwiML() {
  */
 app.post("/api/call", async (req, res) => {
   try {
-    gptService = new GptService(req.body.context);
+    console.log("voice_id:", req.body);
+    ttsService = new TextToSpeechService(req.body.voice_id);
+    gptService = new GptService(req.body.data);
     const twimlContent = generateTwiML();
     const call = await client.calls.create({
       twiml: twimlContent,
@@ -139,7 +143,6 @@ app.ws("/connection", (ws) => {
   // Initialize services
   const streamService = new StreamService(ws);
   const transcriptionService = new TranscriptionService();
-  const ttsService = new TextToSpeechService({});
 
   /**
    * Cleanup function to properly close all services
@@ -252,9 +255,7 @@ app.get("/api/get-patient-data", async (req, res) => {
  * @description Clones a voice using ElevenLabs API
  */
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage })
-
-
+const upload = multer({ storage: storage });
 
 app.post("/api/clone-voice", upload.single("file"), async (req, res) => {
   try {
@@ -296,6 +297,35 @@ app.post("/api/clone-voice", upload.single("file"), async (req, res) => {
   }
 });
 
+app.post("/api/selected-voice", async (req, res) => {
+  try {
+    await supabase.from("selected_voice").delete().neq("id", 0);
+    const { error } = await supabase
+      .from("selected_voice")
+      .insert({ voice_id: req.body.voiceId });
+    if (error) return res.status(400).json({ error: error.message });
+
+    res.json({ success: true, voiceId: voiceId });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/api/get-selected-voice", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("selected_voice")
+      .select("*")
+      .limit(1);
+
+    if (error) return res.status(400).json({ error: error.message });
+    res.json(data[0].voice_id);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: err.message });
+  }
+});
 
 // Start server
 app.listen(PORT, () => {
