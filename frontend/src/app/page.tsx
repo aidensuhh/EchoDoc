@@ -257,7 +257,7 @@ export default function Home() {
           </div>
         </motion.nav>
 
-        <section className="relative pt-40 pb-32">
+        <section className="relative pt-40 pb-16">
           <div className="container mx-auto px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -381,7 +381,44 @@ export default function Home() {
           </div>
         </section>
 
-        <Bento staggerContainer={staggerContainer} fadeIn={fadeIn} />
+        <div className="container mx-auto px-6 mt-8 mb-24">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {[...Array(6)].map((_, i) => (
+              <motion.div
+                key={`feature-icon-${i}`}
+                className="absolute text-green-600/10"
+                initial={{
+                  x: Math.random() * dimensions.width,
+                  y: Math.random() * dimensions.height,
+                  scale: Math.random() * 0.3 + 0.2,
+                  rotate: Math.random() * 360,
+                }}
+                animate={{
+                  x: [null, Math.random() * dimensions.width],
+                  y: [null, Math.random() * dimensions.height],
+                  rotate: [null, Math.random() * 360],
+                }}
+                transition={{
+                  duration: Math.random() * 20 + 30,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+              >
+                {[
+                  <FileText key="file" size={48} className="text-green-500/20" />,
+                  <Brain key="brain" size={44} className="text-green-600/20" />,
+                  <Calendar key="calendar" size={40} className="text-green-400/20" />,
+                  <UserCog key="user" size={46} className="text-green-500/20" />,
+                  <Phone key="phone" size={42} className="text-green-600/20" />,
+                  <Mic2 key="mic" size={48} className="text-green-400/20" />,
+                ][i]}
+              </motion.div>
+            ))}
+          </div>
+
+          <Bento staggerContainer={staggerContainer} fadeIn={fadeIn} />
+        </div>
+
         <Footer />
       </div>
     </div>
