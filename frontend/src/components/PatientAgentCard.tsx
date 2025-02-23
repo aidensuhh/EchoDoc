@@ -19,19 +19,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+interface Patient {
+  id: number;
+  name: string;
+  gender?: string;
+  phone_number?: string;
+  nextAppointment?: string;
+  status: "active" | "inactive" | "calling";
+  phoneNumber: string;
+  avatarUrl?: string;
+  lastCall?: string;
+}
+
 interface PatientAgentCardProps {
-  patient: {
-    id: string;
-    name: string;
-    avatarUrl?: string;
-    lastCall?: string;
-    nextAppointment?: string;
-    status: "active" | "inactive" | "calling";
-    phoneNumber: string;
-  };
-  onDelete: (id: string) => void;
-  onCall: (id: string) => void;
-  onViewDetails: (id: string) => void;
+  patient: Patient;
+  onDelete: (id: number) => void;
+  onCall: (id: number) => Promise<void>;
+  onViewDetails: (id: number) => void;
 }
 
 export function PatientAgentCard({
@@ -76,14 +80,14 @@ export function PatientAgentCard({
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem onClick={() => onViewDetails(patient.id)}>
-              View Details
+              Edit Patient
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => onDelete(patient.id)}
               className="text-red-600"
             >
-              Delete Agent
+              Archive Patient
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -114,9 +118,11 @@ export function PatientAgentCard({
           disabled={patient.status === "inactive"}
         >
           <Mic2 className="h-4 w-4" />
-          {patient.status === "calling" ? "Agent Active" : "Start Agent"}
+          {patient.status === "calling"
+            ? `Currently Consulting with ${patient.name}`
+            : `Start Consultation for ${patient.name}`}
         </Button>
       </CardFooter>
     </Card>
   );
-} 
+}

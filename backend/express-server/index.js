@@ -24,6 +24,7 @@ import GptService from "./ai-agent/services/gpt-service.js";
 import StreamService from "./ai-agent/services/stream-service.js";
 import TranscriptionService from "./ai-agent/services/transcription-service.js";
 import TextToSpeechService from "./ai-agent/services/tts-service.js";
+import { BodyCreatePodcastV1ProjectsPodcastCreatePostDurationScale } from "elevenlabs/api/index.js";
 
 // Configure event emitter for WebSocket handling
 EventEmitter.defaultMaxListeners = 15;
