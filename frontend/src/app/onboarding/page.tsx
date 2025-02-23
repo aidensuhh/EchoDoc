@@ -4,6 +4,8 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Footer } from "@/components/footer";
+
 import {
   Card,
   CardContent,
@@ -77,95 +79,98 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="container mx-auto max-w-2xl py-10">
-      <Card>
-        <CardHeader>
-          <CardTitle>Welcome to EchoDoc</CardTitle>
-          <CardDescription>
-            Let's set up your profile. Please provide your name and record your
-            voice.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="name">Your Name</Label>
-            <Input
-              id="name"
-              placeholder="Dr. John Doe"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
+    <>
+      <div className="container mx-auto max-w-2xl py-10">
+        <Card>
+          <CardHeader>
+            <CardTitle>Welcome to EchoDoc</CardTitle>
+            <CardDescription>
+              Let's set up your profile. Please provide your name and record
+              your voice.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="name">Your Name</Label>
+              <Input
+                id="name"
+                placeholder="Dr. John Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
 
-          <Tabs defaultValue="record" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="record">Record Voice</TabsTrigger>
-              <TabsTrigger value="upload">Upload Audio</TabsTrigger>
-            </TabsList>
+            <Tabs defaultValue="record" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="record">Record Voice</TabsTrigger>
+                <TabsTrigger value="upload">Upload Audio</TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="record" className="space-y-4">
-              <div className="flex flex-col items-center gap-4">
-                <Button
-                  onClick={isRecording ? stopRecording : startRecording}
-                  variant={isRecording ? "destructive" : "default"}
-                  className="w-full"
-                >
-                  {isRecording ? (
-                    <>
-                      <StopCircle className="mr-2 h-4 w-4" />
-                      Stop Recording
-                    </>
-                  ) : (
-                    <>
-                      <Mic className="mr-2 h-4 w-4" />
-                      Start Recording
-                    </>
+              <TabsContent value="record" className="space-y-4">
+                <div className="flex flex-col items-center gap-4">
+                  <Button
+                    onClick={isRecording ? stopRecording : startRecording}
+                    variant={isRecording ? "destructive" : "default"}
+                    className="w-full"
+                  >
+                    {isRecording ? (
+                      <>
+                        <StopCircle className="mr-2 h-4 w-4" />
+                        Stop Recording
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="mr-2 h-4 w-4" />
+                        Start Recording
+                      </>
+                    )}
+                  </Button>
+                  {recordedBlob && !isRecording && (
+                    <audio
+                      src={URL.createObjectURL(recordedBlob)}
+                      controls
+                      className="w-full"
+                    />
                   )}
-                </Button>
-                {recordedBlob && !isRecording && (
-                  <audio
-                    src={URL.createObjectURL(recordedBlob)}
-                    controls
-                    className="w-full"
-                  />
-                )}
-              </div>
-            </TabsContent>
+                </div>
+              </TabsContent>
 
-            <TabsContent value="upload" className="space-y-4">
-              <div className="flex flex-col items-center gap-4">
-                <Label htmlFor="audio-upload" className="w-full">
-                  <div className="flex flex-col items-center gap-2 border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:border-gray-400 transition-colors">
-                    <Upload className="h-8 w-8 text-gray-500" />
-                    <span className="text-sm text-gray-500">
-                      Upload audio file (MP3, WAV)
-                    </span>
-                  </div>
-                </Label>
-                <Input
-                  id="audio-upload"
-                  type="file"
-                  accept="audio/*"
-                  className="hidden"
-                  onChange={handleFileUpload}
-                />
-                {recordedBlob && (
-                  <audio
-                    src={URL.createObjectURL(recordedBlob)}
-                    controls
-                    className="w-full"
+              <TabsContent value="upload" className="space-y-4">
+                <div className="flex flex-col items-center gap-4">
+                  <Label htmlFor="audio-upload" className="w-full">
+                    <div className="flex flex-col items-center gap-2 border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:border-gray-400 transition-colors">
+                      <Upload className="h-8 w-8 text-gray-500" />
+                      <span className="text-sm text-gray-500">
+                        Upload audio file (MP3, WAV)
+                      </span>
+                    </div>
+                  </Label>
+                  <Input
+                    id="audio-upload"
+                    type="file"
+                    accept="audio/*"
+                    className="hidden"
+                    onChange={handleFileUpload}
                   />
-                )}
-              </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-        <CardFooter>
-          <Button onClick={handleSubmit} className="w-full">
-            Continue
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
+                  {recordedBlob && (
+                    <audio
+                      src={URL.createObjectURL(recordedBlob)}
+                      controls
+                      className="w-full"
+                    />
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+          <CardFooter>
+            <Button onClick={handleSubmit} className="w-full">
+              Continue
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+      <Footer />
+    </>
   );
 }
