@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Footer } from "@/components/footer";
+import { useRouter } from "next/navigation";
 
 import {
   Card,
@@ -23,6 +24,7 @@ export default function OnboardingPage() {
   const [name, setName] = useState("");
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
+  const router = useRouter();
 
   const startRecording = async () => {
     try {
@@ -69,13 +71,36 @@ export default function OnboardingPage() {
 
   const handleSubmit = async () => {
     if (!name || !recordedBlob) {
-      alert("Please provide both name and voice recording");
+      alert("Please provide both your name and voice recording");
       return;
     }
 
-    // Here you would typically upload the data to your backend
-    console.log("Name:", name);
-    console.log("Voice recording blob:", recordedBlob);
+    try {
+      // Create a FormData object to send the audio file
+      const formData = new FormData();
+      formData.append('audio', recordedBlob, 'voice-sample.wav');
+      formData.append('name', name);
+
+      // Send the audio file to your backend
+      // const response = await fetch('http://localhost:5500/api/upload-audio', {
+      //   method: 'POST',
+      //   body: formData,
+      // });
+
+      // if (!response.ok) {
+      //   throw new Error('Failed to upload audio');
+      // }
+
+      // const data = await response.json();
+      // console.log('Upload successful:', data);
+
+      // Use Next.js router to redirect to dashboard
+      router.push('/dashboard');
+      
+    } catch (error) {
+      console.error('Error uploading audio:', error);
+      alert('Failed to upload audio. Please try again.');
+    }
   };
 
   return (
