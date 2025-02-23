@@ -12,25 +12,11 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { readFile } from "fs/promises";
 import multer from "multer";
-
-import { ElevenLabsClient } from "elevenlabs";
-
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
-
-// Services for AI agent functionality
-
 // Import GPT services
-
 import GptService from "./ai-agent/services/gpt-service.js";
 import StreamService from "./ai-agent/services/stream-service.js"; // Changed to default import
 import TranscriptionService from "./ai-agent/services/transcription-service.js"; // Changed to default import
 import TextToSpeechService from "./ai-agent/services/tts-service.js";
-import { BodyCreatePodcastV1ProjectsPodcastCreatePostDurationScale } from "elevenlabs/api/index.js";
 
 const app = express();
 const wsInstance = expressWs(app);
@@ -247,26 +233,6 @@ app.ws("/connection", (ws) => {
   });
 });
 
-app.get("/api/get-patient-data", async (req, res) => {
-  try {
-    const { data, error } = await supabase().from("patient-data").select("*").where("id", "eq", req.body.id);
-    if (error) return res.status(400).json({ error: error.message });
-    res.json(data);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: err.message });
-  }
-});
-
-/**
- * @route POST /api/clone-voice
- * @description Clones a voice using ElevenLabs API
- */
-app.post("/api/clone-voice", upload.single("file"), async (req, res) => {
-  try {
-    const client = new ElevenLabsClient({
-      apiKey: process.env.ELEVENLABS_API_KEY,
-    });
 
 
 // Configure multer for audio file storage

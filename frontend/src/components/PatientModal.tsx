@@ -16,16 +16,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Patient } from "@/types/patient";
+
+interface Patient {
+  id: string;
+  name: string;
+  phoneNumber: string;
+  status: "active" | "inactive" | "calling";
+  lastCall: string;
+  nextAppointment: string;
+}
 
 interface PatientModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (patient: Patient) => void;
   patient?: Patient;
-  patientId: number;
-
-
   mode: "edit" | "add";
 }
 
@@ -36,27 +41,14 @@ export function PatientModal({
   patient,
   mode,
 }: PatientModalProps) {
-  const [formData, setFormData] = useState<Patient>({
-    id: 0,
-    name: "",
-    phoneNumber: "",
-    status: "inactive",
-    lastCall: "",
-    nextAppointment: "",
-  });
-
-  useEffect(() => {
-    if (mode === "edit" && patient) {
-      setFormData(patient);
-    } else if (mode === "add") {
-      setFormData({
-        id: patientId,
-        name: "",
-        phoneNumber: "",
-        status: "inactive",
-        lastCall: "",
-        nextAppointment: "",
-      });
+  const [formData, setFormData] = useState<Patient>(
+    patient || {
+      id: String(Date.now()),
+      name: "",
+      phoneNumber: "",
+      status: "inactive",
+      lastCall: "",
+      nextAppointment: "",
     }
   );
 

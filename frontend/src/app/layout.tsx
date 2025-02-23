@@ -3,7 +3,6 @@ import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Toaster } from "sonner";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces" });
 
@@ -36,7 +35,6 @@ export default function RootLayout({
           >
             <main className="flex-1">{children}</main>
           </ThemeProvider>
-          <Toaster />
         </body>
       </html>
     </ClerkProvider>
