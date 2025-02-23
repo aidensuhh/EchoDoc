@@ -67,20 +67,15 @@ export default function Page() {
   const [modalMode, setModalMode] = useState<"edit" | "add">("edit");
 
   const handleDeletePatient = (id: string) => {
-    setPatients(patients.filter((patient) => patient.id !== id));
+    setPatients(patients.filter(patient => patient.id !== id));
   };
 
   const handleStartAgent = (id: string) => {
-    setPatients(
-      patients.map((patient) =>
-        patient.id === id
-          ? {
-              ...patient,
-              status: patient.status === "calling" ? "active" : "calling",
-            }
-          : patient
-      )
-    );
+    setPatients(patients.map(patient => 
+      patient.id === id 
+        ? { ...patient, status: patient.status === "calling" ? "active" : "calling" }
+        : patient
+    ));
   };
 
   const handleViewDetails = (id: string) => {
@@ -99,7 +94,9 @@ export default function Page() {
   const handleSavePatient = (updatedPatient: Patient) => {
     if (modalMode === "edit") {
       setPatients(
-        patients.map((p) => (p.id === updatedPatient.id ? updatedPatient : p))
+        patients.map((p) =>
+          p.id === updatedPatient.id ? updatedPatient : p
+        )
       );
     } else {
       setPatients([...patients, updatedPatient]);
@@ -138,8 +135,8 @@ export default function Page() {
                 onViewDetails={handleViewDetails}
               />
             ))}
-
-            <Card
+            
+            <Card 
               className="flex h-[200px] cursor-pointer items-center justify-center hover:bg-accent/50 transition-colors"
               onClick={handleAddPatient}
             >
@@ -157,6 +154,7 @@ export default function Page() {
         onClose={() => setIsModalOpen(false)}
         onSave={handleSavePatient}
         patient={selectedPatient}
+        patientId={(patients.length + 1).toString()}
         mode={modalMode}
       />
     </SidebarProvider>

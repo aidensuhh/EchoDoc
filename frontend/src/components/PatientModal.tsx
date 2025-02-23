@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +31,7 @@ interface PatientModalProps {
   onClose: () => void;
   onSave: (patient: Patient) => void;
   patient?: Patient;
+  patientId: string;
   mode: "edit" | "add";
 }
 
@@ -39,18 +40,32 @@ export function PatientModal({
   onClose,
   onSave,
   patient,
+  patientId,
   mode,
 }: PatientModalProps) {
-  const [formData, setFormData] = useState<Patient>(
-    patient || {
-      id: String(Date.now()),
-      name: "",
-      phoneNumber: "",
-      status: "inactive",
-      lastCall: "",
-      nextAppointment: "",
+  const [formData, setFormData] = useState<Patient>({
+    id: "",
+    name: "",
+    phoneNumber: "",
+    status: "inactive",
+    lastCall: "",
+    nextAppointment: "",
+  });
+
+  useEffect(() => {
+    if (mode === "edit" && patient) {
+      setFormData(patient);
+    } else if (mode === "add") {
+      setFormData({
+        id: patientId,
+        name: "",
+        phoneNumber: "",
+        status: "inactive",
+        lastCall: "",
+        nextAppointment: "",
+      });
     }
-  );
+  }, [mode, patient, isOpen]); // Add isOpen to dependencies to reset form when modal opens
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
