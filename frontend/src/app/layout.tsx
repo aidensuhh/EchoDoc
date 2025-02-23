@@ -1,15 +1,22 @@
 import type { Metadata } from "next";
-import { Inter, Fraunces } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import { Montserrat } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces" });
+import "./globals.css";
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-montserrat"
+});
 
 export const metadata: Metadata = {
-  title: "EchoDoc - AI Patient Care Management",
-  description:
-    "AI-powered patient care management system with voice cloning technology",
+  title: "EchoDoc - AI-Powered Patient Care Management",
+  description: "Revolutionizing patient care with AI voice cloning technology",
+  icons: {
+    icon: [
+      { url: '/favicon.ico', type: 'image/x-icon' },
+      { url: '/logo.png', type: 'image/png', sizes: '32x32' },
+    ],
+  }
 };
 
 export default function RootLayout({
@@ -19,22 +26,9 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <html
-        lang="en"
-        className={`${inter.variable} ${fraunces.variable}`}
-        suppressHydrationWarning
-      >
-        <body
-          className={`${inter.className} antialiased flex min-h-screen flex-col`}
-        >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <main className="flex-1">{children}</main>
-          </ThemeProvider>
+      <html lang="en" className={montserrat.variable}>
+        <body>
+          {children}
         </body>
       </html>
     </ClerkProvider>

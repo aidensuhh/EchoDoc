@@ -126,9 +126,9 @@ export function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2">
               <Link href="/" className="text-xl font-bold">
-                ECHODOC
+                EchoDoc
               </Link>
-              <span className="text-muted-foreground">© 2024</span>
+              <span className="text-muted-foreground">© 2025</span>
             </div>
             <div className="mt-4 md:mt-0 flex space-x-6">
               <Link
