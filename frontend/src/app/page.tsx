@@ -121,19 +121,29 @@ const bentoFeatures = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-blue-50/30 to-white relative">
-      {/* Base gradient layer */}
+    <div className="min-h-screen bg-[#f8faff]">
+      {/* Base layer */}
+      <div className="fixed inset-0 bg-gradient-to-b from-white/40 via-blue-50/20 to-white/40" />
+      
+      {/* Blur layer */}
       <div 
-        className="absolute inset-0 bg-gradient-to-br from-green-50/50 via-blue-50/30 to-white pointer-events-none"
+        className="fixed inset-0 backdrop-blur-[6px]"
+        style={{
+          background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(236, 246, 255, 0.6), rgba(255, 255, 255, 0.8))',
+          maskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)',
+          WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)',
+        }}
       />
 
-      {/* Blur effect layer */}
+      {/* Mesh gradient for texture */}
       <div 
-        className="absolute inset-0 backdrop-blur-[8px]"
+        className="fixed inset-0 opacity-30"
         style={{
-          background: 'rgba(255, 255, 255, 0.5)',
-          maskImage: 'radial-gradient(circle at center, transparent 0%, black 100%)',
-          WebkitMaskImage: 'radial-gradient(circle at center, transparent 0%, black 100%)',
+          backgroundImage: `
+            radial-gradient(at 80% 0%, rgb(236, 246, 255) 0px, transparent 50%),
+            radial-gradient(at 0% 50%, rgb(236, 246, 255) 0px, transparent 50%),
+            radial-gradient(at 80% 50%, rgb(236, 246, 255) 0px, transparent 50%)
+          `
         }}
       />
 
@@ -143,7 +153,7 @@ export default function Home() {
           initial={{ y: -100 }}
           animate={{ y: 0 }}
           transition={{ type: "spring", stiffness: 100 }}
-          className="fixed w-full top-0 bg-white/60 backdrop-blur-sm z-50 border-b border-gray-100"
+          className="fixed w-full top-0 bg-white/80 backdrop-blur-[2px] z-50"
         >
           <div className="container mx-auto px-6 h-16 flex items-center justify-between">
             <motion.div
@@ -159,8 +169,13 @@ export default function Home() {
                   height={32}
                   className="h-8 w-8"
                 />
-                <span className="text-2xl font-semibold tracking-tight bg-gradient-to-r from-green-700 to-green-500 bg-clip-text text-transparent">
-                  EchoDoc
+                <span className="text-2xl font-bold tracking-tight">
+                  <span className="bg-gradient-to-r from-gray-900 to-gray-800 bg-clip-text text-transparent">
+                    Echo
+                  </span>
+                  <span className="bg-gradient-to-r from-green-800 to-gray-900 bg-clip-text text-transparent">
+                    Doc
+                  </span>
                 </span>
               </Link>
             </motion.div>
@@ -179,50 +194,79 @@ export default function Home() {
                   </Link>
                 </motion.div>
               ))}
-              <div className="flex items-center gap-4">
-                <Link href="/sign-in">
-                  <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
-                    Sign in
-                  </Button>
-                </Link>
-                <Link href="/sign-up">
-                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                    Get Started
-                  </Button>
-                </Link>
-              </div>
+              <Link href="/sign-in">
+                <Button 
+                  size="sm" 
+                  className="
+                    bg-gradient-to-r from-green-600 to-green-500 
+                    hover:from-green-700 hover:to-green-600
+                    text-white px-6 py-2 rounded-full
+                    transition-all duration-200 shadow-sm 
+                    hover:shadow-md hover:shadow-green-100
+                    border border-green-400/20 font-bold
+                  "
+                >
+                  Login
+                </Button>
+              </Link>
             </div>
           </div>
         </motion.nav>
 
-        <section className="relative pt-36 pb-28 overflow-hidden">
+        <section className="relative pt-40 pb-32">
           <div className="container mx-auto px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="max-w-3xl mx-auto text-center space-y-10"
+              className="max-w-[1000px] mx-auto text-center space-y-8"
             >
-              <h1 className="text-6xl font-bold tracking-tight">
-                Revolutionizing Patient Management System
+              <h1 className="text-[3.75rem] leading-[1.1] font-bold tracking-tight">
+                <span className="bg-gradient-to-r from-gray-900 via-green-800 to-green-600 bg-clip-text text-transparent">
+                  Revolutionizing
+                </span>
+                <br />
+                <span className="bg-gradient-to-r from-green-700 via-green-600 to-gray-900 bg-clip-text text-transparent">
+                  Patient Management
+                </span>
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                Empower your medical practice with AI-driven voice cloning technology. 
+              <p className="text-[1.25rem] text-gray-600 leading-[1.6] max-w-2xl mx-auto font-normal">
+                Empower your medical practice with AI-driven voice cloning technology.
                 Streamline patient interactions, automate scheduling, and enhance care delivery.
               </p>
-              <div className="flex justify-center gap-6 pt-4">
-                <Button size="lg" className="px-8 bg-green-600 hover:bg-green-700 text-white">
+              <div className="flex justify-center items-center gap-3 pt-2">
+                <Button 
+                  size="lg" 
+                  className="
+                    h-11 px-6
+                    bg-green-600 hover:bg-green-700
+                    text-white font-medium
+                    rounded-md
+                    transition-all duration-200
+                  "
+                >
                   Start Free Trial
                 </Button>
-                <Button size="lg" variant="outline" className="px-8 border-green-200 hover:bg-green-50">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="
+                    h-11 px-6
+                    border border-gray-200
+                    text-gray-700 font-medium
+                    hover:bg-gray-50
+                    rounded-md
+                    transition-all duration-200
+                  "
+                >
                   Watch Demo
                 </Button>
               </div>
             </motion.div>
           </div>
 
-          <div className="container mx-auto px-6 mt-24">
-            <div className="grid md:grid-cols-3 gap-8">
+          <div className="container mx-auto px-6 mt-32">
+            <div className="grid md:grid-cols-3 gap-6">
               {[
                 {
                   icon: <Mic2 className="h-6 w-6 text-green-600" />,
@@ -242,18 +286,18 @@ export default function Home() {
               ].map((feature, index) => (
                 <Card 
                   key={index} 
-                  className="p-8 bg-white/70 backdrop-blur-[1px] border border-green-100/20 
-                             hover:border-green-200/40 transition-all duration-300 
-                             hover:shadow-lg hover:shadow-green-100/10 group"
+                  className="p-6 bg-white rounded-lg border border-gray-100
+                             hover:border-gray-200 transition-all duration-200 
+                             hover:shadow-sm"
                 >
-                  <div className="h-12 w-12 rounded-lg bg-green-50/80 flex items-center 
-                                  justify-center mb-6 group-hover:bg-green-100/80 transition-colors">
+                  <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center 
+                                justify-center mb-4">
                     {feature.icon}
                   </div>
-                  <h3 className="text-lg font-semibold mb-3 text-gray-800">
+                  <h3 className="text-base font-semibold mb-2 text-gray-900">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
+                  <p className="text-sm text-gray-600 leading-relaxed">
                     {feature.description}
                   </p>
                 </Card>
@@ -262,7 +306,7 @@ export default function Home() {
           </div>
         </section>
 
-        <Bento />
+        <Bento staggerContainer={staggerContainer} fadeIn={fadeIn} />
         <Footer />
       </div>
     </div>
