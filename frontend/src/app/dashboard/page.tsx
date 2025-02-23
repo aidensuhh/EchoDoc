@@ -20,23 +20,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { PatientModal } from "@/components/PatientModal";
-
-// Define the Patient type
-interface Patient {
-  id: string;
-  name: string;
-  avatarUrl?: string;
-  lastCall?: string;
-  nextAppointment?: string;
-  status: "active" | "inactive" | "calling";
-  phoneNumber: string;
-}
+import { toast } from "sonner";
+import { Patient } from "@/types/patient";
 
 export default function Page() {
   // Sample data - replace with actual data fetching
   const [patients, setPatients] = useState<Patient[]>([
     {
-      id: "1",
+      id: 1,
       name: "John Doe",
       phoneNumber: "+1 (555) 123-4567",
       status: "active",
@@ -44,7 +35,7 @@ export default function Page() {
       nextAppointment: "2024-03-20 10:00",
     },
     {
-      id: "2",
+      id: 2,
       name: "Jane Foe",
       phoneNumber: "+1 (416) 123-1923",
       status: "inactive",
@@ -52,7 +43,7 @@ export default function Page() {
       nextAppointment: "2024-05-03 11:11",
     },
     {
-      id: "3",
+      id: 3,
       name: "Blayne Carpet",
       phoneNumber: "+1 (437) 888-4567",
       status: "calling",
@@ -66,24 +57,55 @@ export default function Page() {
   const [selectedPatient, setSelectedPatient] = useState<Patient | undefined>();
   const [modalMode, setModalMode] = useState<"edit" | "add">("edit");
 
-  const handleDeletePatient = (id: string) => {
+  const handleDeletePatient = (id: number) => {
     setPatients(patients.filter((patient) => patient.id !== id));
   };
 
-  const handleStartAgent = (id: string) => {
-    setPatients(
-      patients.map((patient) =>
-        patient.id === id
-          ? {
-              ...patient,
-              status: patient.status === "calling" ? "active" : "calling",
-            }
-          : patient
-      )
-    );
+  const handleCall = async (id: number) => {
+    try {
+      // First, fetch the patient data
+      const patientResponse = await fetch("/api/get-patient-data", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+
+      if (!patientResponse.ok) {
+        throw new Error("Failed to get patient data");
+      }
+
+      const patientData = await patientResponse.json();
+
+      // Start the consultation call
+      const callResponse = await fetch("/api/call", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(patientData),
+      });
+
+      if (!callResponse.ok) {
+        throw new Error("Failed to initiate call");
+      }
+
+      const callResult = await callResponse.json();
+
+      // Update the patient status to "calling"
+      setPatients((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, status: "calling" } : p))
+      );
+
+      toast.success("Call initiated successfully");
+    } catch (error) {
+      console.error("Error initiating call:", error);
+      toast.error("Failed to initiate call");
+    }
   };
 
-  const handleViewDetails = (id: string) => {
+  const handleViewDetails = (id: number) => {
     const patient = patients.find((p) => p.id === id);
     setSelectedPatient(patient);
     setModalMode("edit");
@@ -102,8 +124,13 @@ export default function Page() {
         patients.map((p) => (p.id === updatedPatient.id ? updatedPatient : p))
       );
     } else {
-      setPatients([...patients, updatedPatient]);
+      const newPatient: Patient = {
+        ...updatedPatient,
+        id: lastId + 1,
+      };
+      setPatients([...patients, newPatient]);
     }
+    setIsModalOpen(false);
   };
 
   return (
@@ -134,7 +161,7 @@ export default function Page() {
                 key={patient.id}
                 patient={patient}
                 onDelete={handleDeletePatient}
-                onCall={handleStartAgent}
+                onCall={handleCall}
                 onViewDetails={handleViewDetails}
               />
             ))}
@@ -156,7 +183,8 @@ export default function Page() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSavePatient}
-        patient={selectedPatient as any}
+        patient={selectedPatient}
+        patientId={lastId + 1}
         mode={modalMode}
       />
     </SidebarProvider>
