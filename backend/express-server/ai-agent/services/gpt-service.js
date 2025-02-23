@@ -6,8 +6,8 @@ class GptService extends EventEmitter {
   constructor(context) {
     super();
     this.openai = new OpenAI({
+      baseURL: process.env.GEMINI_BASE_URL,
       apiKey: process.env.GEMINI_API_KEY,
-      baseURL: process.env.GEMINI_API_BASE_URL,
     });
     this.userContext = [
       {
@@ -66,7 +66,7 @@ class GptService extends EventEmitter {
       while (retryCount < this.maxRetries && !success) {
         try {
           const stream = await this.openai.chat.completions.create({
-            model: "gpt-4-1106-preview",
+            model: "gemini-2.0-flash",
             messages: this.userContext,
             stream: true,
           });
