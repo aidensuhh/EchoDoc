@@ -65,28 +65,35 @@ export default function Page() {
   const handleCall = async (id: number) => {
     try {
       // First, fetch the patient data
-      const patientResponse = await fetch("/api/get-patient-data", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id }),
-      });
-
+      const patientResponse = await fetch(
+        `http://localhost:5500/api/get-patient-data?id=${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(id)
       if (!patientResponse.ok) {
         throw new Error("Failed to get patient data");
       }
 
       const patientData = await patientResponse.json();
+      console.log(patientResponse);
 
       // Start the consultation call
-      const callResponse = await fetch("/api/call", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(patientData),
-      });
+      const callResponse = await fetch(
+        "http://localhost:5500/api/call",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(patientData),
+        }
+      );
+      console.log(JSON.stringify(patientData));
 
       if (!callResponse.ok) {
         throw new Error("Failed to initiate call");
