@@ -11,7 +11,7 @@ import twilio from "twilio";
 import { EventEmitter } from "events";
 import multer from "multer";
 import { ElevenLabsClient } from "elevenlabs";
-
+import fs from "fs";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -41,7 +41,6 @@ app.use(express.urlencoded({ extended: false }));
 // Constants
 
 const PORT = process.env.PORT || 5000;
-const upload = multer({ storage: multer.memoryStorage() });
 
 // Initialize Twilio client
 let gptService = new GptService();
@@ -252,23 +251,51 @@ app.get("/api/get-patient-data", async (req, res) => {
  * @route POST /api/clone-voice
  * @description Clones a voice using ElevenLabs API
  */
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage })
+
+
+
 app.post("/api/clone-voice", upload.single("file"), async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No audio file provided" });
+    }
+
+    const voiceName = req.body.name || "Default Voice"; // Get voice name from request body
+
+    // Create a temporary file from the buffer
+    const tempFilePath = `/tmp/${Date.now()}-${req.file.originalname}`;
+    fs.writeFileSync(tempFilePath, req.file.buffer);
+
     const client = new ElevenLabsClient({
       apiKey: process.env.ELEVENLABS_API_KEY,
     });
 
+    // Make the API call and await the response
     const response = await client.voices.add({
-      files: [req.file.buffer],
-      name: Date.now().toString(),
+      files: [fs.createReadStream(tempFilePath)],
+      name: voiceName,
     });
 
-    res.json(response);
+    // Clean up the temporary file
+    fs.unlinkSync(tempFilePath);
+
+    // Send back the voice ID and other relevant data
+    res.json({
+      success: true,
+      voiceId: response.voice_id,
+      name: response.name,
+    });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: err.message });
+    console.error("Voice cloning error:", err);
+    return res.status(500).json({
+      error: "Failed to clone voice",
+      details: err.message,
+    });
   }
 });
+
 
 // Start server
 app.listen(PORT, () => {

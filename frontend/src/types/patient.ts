@@ -6,4 +6,4 @@ export interface Patient {
   nextAppointment?: string;
   status: "active" | "inactive" | "calling";
   phoneNumber: string;
-} 
+}

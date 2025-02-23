@@ -136,7 +136,7 @@ export default function Home() {
             whileTap={{ scale: 0.95 }}
             className="flex items-center"
           >
-            <Link href="/" className="text-2xl font-bold">
+            <Link href="/" className="text-2xl font-bold ">
               ECHODOC
             </Link>
           </motion.div>
@@ -174,6 +174,12 @@ export default function Home() {
             variants={staggerContainer}
             className="max-w-4xl mx-auto text-center"
           >
+            <motion.h1
+              variants={fadeIn}
+              className="text-9xl font-bold mb-12 whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text leading-none text-transparent dark:from-white dark:to-slate-900/10"
+            >
+              ECHODOC
+            </motion.h1>
             <motion.h1
               variants={fadeIn}
               className="text-6xl font-serif mb-6 font-fraunces"
