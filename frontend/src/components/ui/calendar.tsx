@@ -3,7 +3,7 @@
 import * as React from "react";
 import { DayPicker } from "react-day-picker";
 import { cn } from "@/lib/utils";
-import { ArrowLeft } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -23,10 +23,13 @@ function Calendar({
       classNames={{
         months: "space-y-4",
         month: "space-y-4",
-        caption: "flex justify-center pt-1 relative items-center",
+        caption: "flex justify-between items-center px-2",
         caption_label: "text-sm font-medium",
-        nav: "flex items-center",
-        nav_button: "h-7 w-7 bg-transparent p-0 hover:opacity-100",
+        nav: "flex items-center justify-between space-x-1",
+        nav_button: cn(
+          "h-7 w-7 bg-transparent p-0 opacity-75 hover:opacity-100 transition-opacity",
+          "flex items-center justify-center rounded-md hover:bg-accent"
+        ),
         table: "w-full border-collapse",
         head_row: "grid grid-cols-7",
         head_cell: "text-muted-foreground font-normal text-[0.8rem] text-center",
@@ -39,6 +42,10 @@ function Calendar({
         day_disabled: "text-muted-foreground opacity-50",
         day_hidden: "invisible",
         ...classNames,
+      }}
+      components={{
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />
       }}
       {...props}
     />
