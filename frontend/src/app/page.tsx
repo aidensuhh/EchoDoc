@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { motion } from "framer-motion";
 import { BentoGrid, BentoCard } from "@/components/ui/bento-grid";
 import { Brain, Calendar, FileText, Mic2, Phone, UserCog } from "lucide-react";
@@ -122,159 +121,150 @@ const bentoFeatures = [
 
 export default function Home() {
   return (
-    <div className="bg-background">
-      
-      {/* Navigation */}
-      <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ type: "spring", stiffness: 100 }}
-        className="fixed w-full top-0 bg-background/80 backdrop-blur-sm z-50 border-b"
-      >
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center"
-          >
-            <Link href="/" className="text-2xl font-bold ">
-              ECHODOC
-            </Link>
-          </motion.div>
-          <div className="hidden md:flex items-center space-x-8">
-            {["Company", "Blog", "Demo"].map((item) => (
-              <motion.div
-                key={item}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link
-                  href={`/${item.toLowerCase()}`}
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {item}
-                </Link>
-              </motion.div>
-            ))}
-            <ThemeToggle />
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/sign-in">
-                <Button variant="outline">Login</Button>
+    <div className="min-h-screen bg-gradient-to-b from-white via-blue-50/30 to-white relative">
+      {/* Base gradient layer */}
+      <div 
+        className="absolute inset-0 bg-gradient-to-br from-green-50/50 via-blue-50/30 to-white pointer-events-none"
+      />
+
+      {/* Blur effect layer */}
+      <div 
+        className="absolute inset-0 backdrop-blur-[8px]"
+        style={{
+          background: 'rgba(255, 255, 255, 0.5)',
+          maskImage: 'radial-gradient(circle at center, transparent 0%, black 100%)',
+          WebkitMaskImage: 'radial-gradient(circle at center, transparent 0%, black 100%)',
+        }}
+      />
+
+      {/* Content wrapper */}
+      <div className="relative z-10">
+        <motion.nav
+          initial={{ y: -100 }}
+          animate={{ y: 0 }}
+          transition={{ type: "spring", stiffness: 100 }}
+          className="fixed w-full top-0 bg-white/60 backdrop-blur-sm z-50 border-b border-gray-100"
+        >
+          <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-2"
+            >
+              <Link href="/" className="flex items-center gap-3">
+                <Image
+                  src="/logo.png"
+                  alt="EchoDoc Logo"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8"
+                />
+                <span className="text-2xl font-semibold tracking-tight bg-gradient-to-r from-green-700 to-green-500 bg-clip-text text-transparent">
+                  EchoDoc
+                </span>
               </Link>
             </motion.div>
-          </div>
-        </div>
-      </motion.nav>
-
-      {/* Hero Section */}
-      <main className="pt-32 pb-16">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-            className="max-w-4xl mx-auto text-center"
-          >
-            <motion.h1
-              variants={fadeIn}
-              className="text-9xl font-bold mb-12 whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text leading-none text-transparent dark:from-white dark:to-slate-900/10"
-            >
-              ECHODOC
-            </motion.h1>
-            <motion.h1
-              variants={fadeIn}
-              className="text-6xl font-serif mb-6 font-fraunces"
-            >
-              The Ultimate AI Suite for Patient Care Management
-            </motion.h1>
-            <motion.p
-              variants={fadeIn}
-              className="text-xl text-muted-foreground mb-8"
-            >
-              AI that handles patient calls, appointments, and reporting for
-              your practice. From service booking to patient care, and
-              everything in between.
-            </motion.p>
-            <motion.div variants={fadeIn} className="flex justify-center gap-4">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button
-                  size="lg"
-                  className="bg-foreground text-background hover:bg-foreground/90"
+            <div className="hidden md:flex items-center gap-8">
+              {["Features", "About", "Contact"].map((item) => (
+                <motion.div
+                  key={item}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  Talk to EchoDoc
-                </Button>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button size="lg" variant="outline">
-                  Book a Demo →
-                </Button>
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </main>
+                  <Link
+                    href={`/${item.toLowerCase()}`}
+                    className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    {item}
+                  </Link>
+                </motion.div>
+              ))}
+              <div className="flex items-center gap-4">
+                <Link href="/sign-in">
+                  <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
+                    Sign in
+                  </Button>
+                </Link>
+                <Link href="/sign-up">
+                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                    Get Started
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </motion.nav>
 
-      {/* Features Section */}
-      <section className="py-16 bg-muted/50">
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-3xl font-fraunces text-center mb-8"
-        >
-          Our Core Services
-        </motion.h1>
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-            className="grid md:grid-cols-3 gap-8"
-          >
-            {[
-              {
-                title: "Voice Cloning",
-                description:
-                  "Clone your voice for personalized patient interactions, maintaining your unique connection with each patient.",
-              },
-              {
-                title: "Smart Scheduling",
-                description:
-                  "Automated appointment booking that syncs with your calendar in real-time.",
-              },
-              {
-                title: "Patient Management",
-                description:
-                  "Comprehensive patient profiles with medical history, preferences, and interaction logs.",
-              },
-            ].map((feature) => (
-              <motion.div
-                key={feature.title}
-                variants={fadeIn}
-                whileHover={{ y: -5 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <Card className="p-6 h-full border border-border/50 hover:border-border transition-colors">
-                  <h3 className="text-xl font-semibold mb-3">
+        <section className="relative pt-36 pb-28 overflow-hidden">
+          <div className="container mx-auto px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="max-w-3xl mx-auto text-center space-y-10"
+            >
+              <h1 className="text-6xl font-bold tracking-tight">
+                Revolutionizing Patient Management System
+              </h1>
+              <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+                Empower your medical practice with AI-driven voice cloning technology. 
+                Streamline patient interactions, automate scheduling, and enhance care delivery.
+              </p>
+              <div className="flex justify-center gap-6 pt-4">
+                <Button size="lg" className="px-8 bg-green-600 hover:bg-green-700 text-white">
+                  Start Free Trial
+                </Button>
+                <Button size="lg" variant="outline" className="px-8 border-green-200 hover:bg-green-50">
+                  Watch Demo
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+
+          <div className="container mx-auto px-6 mt-24">
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                {
+                  icon: <Mic2 className="h-6 w-6 text-green-600" />,
+                  title: "Voice Cloning",
+                  description: "Create perfect digital replicas of your voice for consistent patient interactions."
+                },
+                {
+                  icon: <Calendar className="h-6 w-6 text-green-600" />,
+                  title: "Smart Scheduling",
+                  description: "Automated appointment booking with real-time calendar synchronization."
+                },
+                {
+                  icon: <Brain className="h-6 w-6 text-green-600" />,
+                  title: "AI-Powered Analysis",
+                  description: "Intelligent processing of patient data for better care decisions."
+                }
+              ].map((feature, index) => (
+                <Card 
+                  key={index} 
+                  className="p-8 bg-white/70 backdrop-blur-[1px] border border-green-100/20 
+                             hover:border-green-200/40 transition-all duration-300 
+                             hover:shadow-lg hover:shadow-green-100/10 group"
+                >
+                  <div className="h-12 w-12 rounded-lg bg-green-50/80 flex items-center 
+                                  justify-center mb-6 group-hover:bg-green-100/80 transition-colors">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-lg font-semibold mb-3 text-gray-800">
                     {feature.title}
                   </h3>
-                  <p className="text-muted-foreground">{feature.description}</p>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {feature.description}
+                  </p>
                 </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+              ))}
+            </div>
+          </div>
+        </section>
 
-      <Bento staggerContainer={staggerContainer} fadeIn={fadeIn} />
-      <Footer />
+        <Bento />
+        <Footer />
+      </div>
     </div>
   );
 }
