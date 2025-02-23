@@ -12,11 +12,19 @@ import { EventEmitter } from "events";
 import multer from "multer";
 import { ElevenLabsClient } from "elevenlabs";
 
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
+
 // Services for AI agent functionality
 import GptService from "./ai-agent/services/gpt-service.js";
 import StreamService from "./ai-agent/services/stream-service.js";
 import TranscriptionService from "./ai-agent/services/transcription-service.js";
 import TextToSpeechService from "./ai-agent/services/tts-service.js";
+import { BodyCreatePodcastV1ProjectsPodcastCreatePostDurationScale } from "elevenlabs/api/index.js";
 
 // Configure event emitter for WebSocket handling
 EventEmitter.defaultMaxListeners = 15;
@@ -29,7 +37,6 @@ expressWs(app);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
 
 // Constants
 
@@ -223,6 +230,17 @@ app.ws("/connection", (ws) => {
     cleanup();
     ws.close(1011, "Internal server error");
   });
+});
+
+app.get("/api/get-patient-data", async (req, res) => {
+  try {
+    const { data, error } = await supabase().from("patient-data").select("*").where("id", "eq", req.body.id);
+    if (error) return res.status(400).json({ error: error.message });
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: err.message });
+  }
 });
 
 /**
