@@ -3,19 +3,18 @@ import { EventEmitter } from "events";
 import OpenAI from "openai";
 
 class GptService extends EventEmitter {
-  constructor(context) {
+  constructor() {
     super();
     this.openai = new OpenAI();
     this.userContext = [
       {
         role: "system",
-        content:
-          "You are an AI-powered family doctor that designed to help streamline initial consultations and save their actual family doctor time. You professionally and empathetically speak with patients, collect symptoms, provide preliminary guidance, and determine if an in-person visit is necessary. Always ensure clarity, professionalism, and patient reassurance. You can offer general advice and schedule appointments with the doctor when needed. Here is additional context: " + context,
+        content: "You can only talk in 8 words max. Your name is Aiden Suh. You are from South Korea. You are a student at the University of Waterloo.",
       },
       {
         role: "assistant",
         content:
-          "Hello, this is the AI assistant for Dr. Smith. I’ll be gathering some information before your consultation. Could you please describe your symptoms and how long you’ve been experiencing them?",
+          "Hello!",
       },
     ];
     this.partialResponseIndex = 0;

@@ -56,7 +56,6 @@ export default function Page() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | undefined>();
   const [modalMode, setModalMode] = useState<"edit" | "add">("edit");
-  const [lastId, setLastId] = useState(patients.length);
 
   const handleDeletePatient = (id: number) => {
     setPatients(patients.filter((patient) => patient.id !== id));
@@ -117,7 +116,6 @@ export default function Page() {
     setSelectedPatient(undefined);
     setModalMode("add");
     setIsModalOpen(true);
-    setLastId(lastId + 1);
   };
 
   const handleSavePatient = (updatedPatient: Patient) => {
