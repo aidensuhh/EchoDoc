@@ -33,6 +33,25 @@ const staggerContainer = {
   },
 };
 
+const cardVariants = {
+  hidden: { 
+    opacity: 0, 
+    y: 20,
+    scale: 0.95
+  },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 20,
+      duration: 0.5
+    }
+  }
+};
+
 const bentoFeatures = [
   {
     name: "Voice Cloning Technology",
@@ -141,63 +160,61 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-blue-50/10 to-green-50/10 overflow-hidden">
-      {/* Enhanced gradient background */}
+    <div className="min-h-screen bg-[#fafafa] overflow-hidden">
+      {/* Base gradient layer */}
       <div className="fixed inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-white via-green-50/30 to-blue-50/20 backdrop-blur-[12px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(22,163,74,0.15),transparent_70%)]" />
+        <div 
+          className="absolute inset-0 bg-gradient-to-br from-white via-green-50/5 to-blue-50/5"
+          style={{
+            backdropFilter: 'blur(60px)',
+          }} 
+        />
       </div>
 
       {/* Floating medical icons with constrained areas */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        {[...Array(12)].map((_, i) => (
+        {[...Array(8)].map((_, i) => ( // Reduced number of icons
           <motion.div
             key={i}
-            className="absolute text-green-700/40" // Increased visibility
+            className="absolute text-green-600/20" // Adjusted color and opacity
             initial={{
-              // Constrain icons to the sides and avoid center content
               x: Math.random() > 0.5 
-                ? Math.random() * dimensions.width * 0.3 // Left 30%
-                : dimensions.width * 0.7 + Math.random() * dimensions.width * 0.3, // Right 30%
+                ? Math.random() * dimensions.width * 0.2 // Left 20%
+                : dimensions.width * 0.8 + Math.random() * dimensions.width * 0.2, // Right 20%
               y: Math.random() * dimensions.height,
-              scale: Math.random() * 0.5 + 0.5,
+              scale: Math.random() * 0.3 + 0.3, // Smaller icons
               rotate: Math.random() * 360,
             }}
             animate={{
               x: [null, 
                 Math.random() > 0.5
-                  ? Math.random() * dimensions.width * 0.3
-                  : dimensions.width * 0.7 + Math.random() * dimensions.width * 0.3
+                  ? Math.random() * dimensions.width * 0.2
+                  : dimensions.width * 0.8 + Math.random() * dimensions.width * 0.2
               ],
               y: [null, Math.random() * dimensions.height],
               rotate: [null, Math.random() * 360],
             }}
             transition={{
-              duration: Math.random() * 20 + 30, // Slower movement
+              duration: Math.random() * 25 + 35, // Slower movement
               repeat: Infinity,
               ease: "linear",
             }}
           >
             {[
-              <Stethoscope key="stethoscope1" size={52} className="filter drop-shadow-[0_2px_8px_rgba(22,163,74,0.4)]" />,
-              <Pill key="pill" size={44} className="filter drop-shadow-[0_2px_8px_rgba(22,163,74,0.4)]" />,
-              <Syringe key="syringe" size={48} className="filter drop-shadow-[0_2px_8px_rgba(22,163,74,0.4)]" />,
-              <Stethoscope key="stethoscope2" size={50} className="filter drop-shadow-[0_2px_8px_rgba(22,163,74,0.4)]" />,
-              <Thermometer key="thermometer" size={46} className="filter drop-shadow-[0_2px_8px_rgba(22,163,74,0.4)]" />,
-              <HeartPulse key="heartpulse" size={52} className="filter drop-shadow-[0_2px_8px_rgba(22,163,74,0.4)]" />,
-            ][i % 6]}
+              <Stethoscope key="stethoscope1" size={48} className="filter drop-shadow-[0_2px_10px_rgba(22,163,74,0.2)]" />,
+              <Pill key="pill" size={40} className="filter drop-shadow-[0_2px_10px_rgba(22,163,74,0.2)]" />,
+              <Syringe key="syringe" size={44} className="filter drop-shadow-[0_2px_10px_rgba(22,163,74,0.2)]" />,
+              <HeartPulse key="heartpulse" size={48} className="filter drop-shadow-[0_2px_10px_rgba(22,163,74,0.2)]" />,
+            ][i % 4]}
           </motion.div>
         ))}
       </div>
 
-      {/* Subtle mesh gradient overlay */}
+      {/* Subtle gradient overlay */}
       <div 
-        className="fixed inset-0 opacity-30"
+        className="fixed inset-0 opacity-20"
         style={{
-          backgroundImage: `
-            radial-gradient(at 20% 20%, rgba(22, 163, 74, 0.1) 0px, transparent 50%),
-            radial-gradient(at 80% 80%, rgba(59, 130, 246, 0.1) 0px, transparent 50%)
-          `
+          background: 'radial-gradient(circle at 50% 50%, rgba(22, 163, 74, 0.08), transparent 70%)'
         }}
       />
 
@@ -242,7 +259,22 @@ export default function Home() {
                 >
                   <Link
                     href={`/${item.toLowerCase()}`}
-                    className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                    className="
+                      text-sm font-medium text-gray-600 
+                      hover:text-gray-900 
+                      transition-all duration-300
+                      relative
+                      after:content-['']
+                      after:absolute
+                      after:w-0
+                      after:h-[2px]
+                      after:bg-green-600
+                      after:left-0
+                      after:-bottom-1
+                      after:transition-all
+                      after:duration-300
+                      hover:after:w-full
+                    "
                   >
                     {item}
                   </Link>
@@ -254,10 +286,11 @@ export default function Home() {
                   className="
                     bg-gradient-to-r from-green-600 to-green-500 
                     hover:from-green-700 hover:to-green-600
-                    text-white px-6 py-2 rounded-full
-                    transition-all duration-200 shadow-sm 
-                    hover:shadow-md hover:shadow-green-100
+                    text-white px-6 py-2 rounded-md
+                    transition-all duration-300 shadow-sm 
+                    hover:shadow-[0_4px_12px_rgba(22,163,74,0.15)]
                     border border-green-400/20 font-bold
+                    transform hover:scale-[1.02]
                   "
                 >
                   Login
@@ -285,21 +318,24 @@ export default function Home() {
                 </span>
               </h1>
               <p className="text-[1.1rem] text-gray-600 leading-[1.6] max-w-[720px] mx-auto font-normal tracking-tight">
-                AI that multiplies you—from 1 voice to 100 patient conversations. <br />10-minute setup today, full schedule by breakfast tomorrow.
+                AI that multiplies you—from 1 voice to 100 patient conversations. <br />
+                10-minute setup today, full schedule by breakfast tomorrow.
               </p>
               <div className="flex justify-center items-center gap-3 pt-5">
                 <Button 
                   size="lg" 
                   className="
                     px-6 h-10
-                    bg-green-600
-                    hover:bg-green-700
+                    bg-gradient-to-r from-green-600 to-green-500
+                    hover:from-green-700 hover:to-green-600
                     text-white text-[0.925rem] font-bold
-                    rounded
-                    transition-all duration-200
+                    rounded-md
+                    transition-all duration-300
                     shadow-[0_1px_2px_rgba(0,0,0,0.05)]
-                    hover:shadow-[0_2px_4px_rgba(0,0,0,0.05)]
+                    hover:shadow-[0_4px_12px_rgba(22,163,74,0.2)]
                     flex items-center justify-center
+                    transform hover:scale-[1.02]
+                    border border-green-500/20
                   "
                 >
                   Start Free Trial
@@ -311,11 +347,14 @@ export default function Home() {
                     px-6 h-10
                     border border-gray-200
                     text-gray-600 text-[0.925rem] font-bold
-                    hover:text-gray-800 hover:border-gray-300
-                    hover:bg-gray-50/50
-                    rounded
-                    transition-all duration-200
+                    hover:text-gray-900
+                    hover:border-green-200
+                    hover:bg-green-50/30
+                    rounded-md
+                    transition-all duration-300
                     flex items-center justify-center
+                    transform hover:scale-[1.02]
+                    hover:shadow-[0_4px_12px_rgba(22,163,74,0.1)]
                   "
                 >
                   Watch Demo
@@ -343,23 +382,43 @@ export default function Home() {
                   description: "Intelligent processing of patient data for better care decisions."
                 }
               ].map((feature, index) => (
-                <Card 
-                  key={index} 
-                  className="p-6 bg-white rounded-lg border border-gray-100
-                             hover:border-gray-200 transition-all duration-200 
-                             hover:shadow-sm"
+                <motion.div
+                  key={index}
+                  variants={cardVariants}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  custom={index}
+                  whileHover={{ 
+                    scale: 1.02,
+                    transition: { duration: 0.2 }
+                  }}
                 >
-                  <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center 
-                                justify-center mb-4">
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-base font-semibold mb-2 text-gray-900">
-                    {feature.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    {feature.description}
-                  </p>
-                </Card>
+                  <Card 
+                    className="
+                      p-6 bg-white/80 rounded-lg border border-gray-100
+                      hover:border-green-200 transition-all duration-300 
+                      hover:shadow-[0_4px_12px_rgba(22,163,74,0.08)]
+                      hover:bg-gradient-to-br hover:from-white hover:to-green-50/30
+                    "
+                  >
+                    <motion.div 
+                      className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center mb-4"
+                      whileHover={{ 
+                        rotate: [0, -10, 10, -10, 0],
+                        transition: { duration: 0.5 }
+                      }}
+                    >
+                      {feature.icon}
+                    </motion.div>
+                    <h3 className="text-base font-semibold mb-2 text-gray-900">
+                      {feature.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </Card>
+                </motion.div>
               ))}
             </div>
           </div>
