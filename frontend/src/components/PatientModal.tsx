@@ -16,22 +16,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-
-interface Patient {
-  id: string;
-  name: string;
-  phoneNumber: string;
-  status: "active" | "inactive" | "calling";
-  lastCall: string;
-  nextAppointment: string;
-}
+import { Patient } from "@/types/patient";
 
 interface PatientModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (patient: Patient) => void;
   patient?: Patient;
-  patientId: string;
+  patientId: number;
   mode: "edit" | "add";
 }
 
@@ -44,7 +36,7 @@ export function PatientModal({
   mode,
 }: PatientModalProps) {
   const [formData, setFormData] = useState<Patient>({
-    id: "",
+    id: 0,
     name: "",
     phoneNumber: "",
     status: "inactive",
