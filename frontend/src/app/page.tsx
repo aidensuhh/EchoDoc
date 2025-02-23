@@ -5,11 +5,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { BentoGrid, BentoCard } from "@/components/ui/bento-grid";
 import { Brain, Calendar, FileText, Mic2, Phone, UserCog, Stethoscope, Pill, Syringe, Thermometer, HeartPulse } from "lucide-react";
-import Bento from "@/components/Bento";
 import React from "react";
 import { Footer } from "@/components/footer";
+import { BentoGrid, BentoCard } from "@/components/ui/bento-grid";
+import Bento from "@/components/Bento";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -81,62 +81,7 @@ const bentoFeatures = [
       </div>
     ),
   },
-  {
-    name: "Automated Scheduling",
-    description:
-      "Real-time calendar synchronization with smart conflict resolution and optimal time slot suggestions.",
-    Icon: Calendar,
-    className: "md:col-span-1",
-    href: "/features/scheduling",
-    cta: "See it in action",
-    background: (
-      <div className="absolute inset-0 flex items-center justify-center opacity-10">
-        <Calendar className="w-72 h-72" />
-      </div>
-    ),
-  },
-  {
-    name: "Medical History Analysis",
-    description:
-      "Advanced processing of patient records to provide contextual information during interactions.",
-    Icon: FileText,
-    className: "md:col-span-2",
-    href: "/features/medical-history",
-    cta: "View capabilities",
-    background: (
-      <div className="absolute inset-0 flex items-center justify-center opacity-10">
-        <FileText className="w-56 h-56" />
-      </div>
-    ),
-  },
-  {
-    name: "AI-Powered Diagnosis Support",
-    description:
-      "Assist in preliminary symptom assessment and provide relevant medical information.",
-    Icon: Brain,
-    className: "md:col-span-2",
-    href: "/features/ai-diagnosis",
-    cta: "Discover AI features",
-    background: (
-      <div className="absolute inset-0 flex items-center justify-center opacity-10">
-        <Brain className="w-40 h-40" />
-      </div>
-    ),
-  },
-  {
-    name: "Patient Profile Management",
-    description:
-      "Comprehensive dashboard for managing patient information, preferences, and interaction history.",
-    Icon: UserCog,
-    className: "md:col-span-1",
-    href: "/features/profile-management",
-    cta: "View dashboard",
-    background: (
-      <div className="absolute inset-0 flex items-center justify-center opacity-10">
-        <UserCog className="w-72 h-72" />
-      </div>
-    ),
-  },
+  // ... add back other bento features
 ];
 
 export default function Home() {
