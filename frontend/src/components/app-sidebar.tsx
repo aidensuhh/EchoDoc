@@ -58,8 +58,8 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "Calender",
-          url: "/calender",
+          title: "Calendar",
+          url: "/calendar",
         },
         {
           title: "History",
