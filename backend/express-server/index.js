@@ -233,15 +233,20 @@ app.ws("/connection", (ws) => {
   });
 });
 
+app.get("/api/get-patient-data", async (req, res) => {
+  try {
+    const { id } = req.query; // Access the id query param
+    const { data, error } = await supabase
+      .from("patient_data")
+      .select("*")
+      .eq("id", parseInt(id, 10));
 
+    if (error) return res.status(400).json({ error: error.message });
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: err.message });
 
-// Configure multer for audio file storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "../flask-server/OpenVoice/resources"); // Make sure this directory exists
-  },
-  filename: function (req, file, cb) {
-    cb(null, 'audio-' + Date.now() + '.wav')
   }
 });
 

@@ -70,12 +70,63 @@ export default function Page() {
     setPatients(patients.filter(patient => patient.id !== id));
   };
 
-  const handleStartAgent = (id: string) => {
+  const handleCall = async (id: number) => {
+    try {
+      // First, fetch the patient data
+      const patientResponse = await fetch(
+        `http://localhost:5500/api/get-patient-data?id=${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(id)
+      if (!patientResponse.ok) {
+        throw new Error("Failed to get patient data");
+      }
+
+      const patientData = await patientResponse.json();
+      console.log(patientResponse);
+
+      // Start the consultation call
+      const callResponse = await fetch(
+        "http://localhost:5500/api/call",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(patientData),
+        }
+      );
+      console.log(JSON.stringify(patientData));
+
+      if (!callResponse.ok) {
+        throw new Error("Failed to initiate call");
+      }
+
+      const callResult = await callResponse.json();
+
+      // Update the patient status to "calling"
+      setPatients((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, status: "calling" } : p))
+      );
+
+      toast.success("Call initiated successfully");
+    } catch (error) {
+      console.error("Error initiating call:", error);
+      toast.error("Failed to initiate call");
+    }
+      
+ const handleStartAgent = (id: string) => {
     setPatients(patients.map(patient => 
       patient.id === id 
         ? { ...patient, status: patient.status === "calling" ? "active" : "calling" }
         : patient
     ));
+   
   };
 
   const handleViewDetails = (id: string) => {
