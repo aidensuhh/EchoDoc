@@ -1,57 +1,51 @@
+/**
+ * Express Server Entry Point
+ * Handles WebSocket connections for real-time audio streaming,
+ * voice cloning, and Twilio call management.
+ */
+
 import express from "express";
-
-// Set max listeners before creating app
-import { EventEmitter } from "events";
-EventEmitter.defaultMaxListeners = 15;
-
 import expressWs from "express-ws";
 import cors from "cors";
 import twilio from "twilio";
-import nodemailer from "nodemailer";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
-import { readFile } from "fs/promises";
+import { EventEmitter } from "events";
 import multer from "multer";
-// Import GPT services
+import { ElevenLabsClient } from "elevenlabs";
+
+// Services for AI agent functionality
 import GptService from "./ai-agent/services/gpt-service.js";
-import StreamService from "./ai-agent/services/stream-service.js"; // Changed to default import
-import TranscriptionService from "./ai-agent/services/transcription-service.js"; // Changed to default import
+import StreamService from "./ai-agent/services/stream-service.js";
+import TranscriptionService from "./ai-agent/services/transcription-service.js";
 import TextToSpeechService from "./ai-agent/services/tts-service.js";
 
-const app = express();
-const wsInstance = expressWs(app);
+// Configure event emitter for WebSocket handling
+EventEmitter.defaultMaxListeners = 15;
 
-// Middleware 
+// Initialize Express with WebSocket support
+const app = express();
+expressWs(app);
+
+// Middleware configuration
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+
 // Constants
 const PORT = process.env.PORT || 5000;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const upload = multer({ storage: multer.memoryStorage() });
 
-// Twilio setup
+// Initialize Twilio client
+let gptService = new GptService();
 const client = twilio(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
 );
-let callStatus = "pending";
-let lastCallFrom = "";
-let lastCallTo = "";
-global.voiceModel = "aura-asteria-en";
-let userName = "John Doe";
-// Helper Functions
-async function readTwiMLFile() {
-  const filePath = join(__dirname, "twiml.xml");
-  try {
-    return await readFile(filePath, "utf8");
-  } catch (error) {
-    console.error("Error reading TwiML file:", error);
-    throw error;
-  }
-}
 
+/**
+ * Generates TwiML for call streaming
+ * @returns {string} TwiML response as string
+ */
 function generateTwiML() {
   const response = new twilio.twiml.VoiceResponse();
   const connect = response.connect();
@@ -61,9 +55,13 @@ function generateTwiML() {
   return response.toString();
 }
 
-// Routes
-app.get("/api/call", async (req, res) => {
+/**
+ * @route POST /api/call
+ * @description Initiates an outbound call using Twilio
+ */
+app.post("/api/call", async (req, res) => {
   try {
+    gptService = new GptService(req.body.context);
     const twimlContent = generateTwiML();
     const call = await client.calls.create({
       twiml: twimlContent,
@@ -79,22 +77,10 @@ app.get("/api/call", async (req, res) => {
   }
 });
 
-app.post("/api/callStatus", (req, res) => {
-  console.log("Twilio Callback Body:", req.body);
-  // Destructure and set callStatus
-  const { CallSid, CallStatus } = req.body;
-  callStatus = CallStatus;
-  console.log(`Call ${CallSid} status: ${CallStatus}`);
-  res.status(200).send("Status received");
-});
-
-app.get("/api/callStatus", (req, res) => {
-  res.json({
-    status: callStatus === "completed" ? "completed" : "pending",
-  });
-});
-
-// GPT Voice Routes
+/**
+ * @route POST /incoming
+ * @description Handles incoming Twilio calls
+ */
 app.post("/incoming", (req, res) => {
   try {
     const response = new twilio.twiml.VoiceResponse();
@@ -107,14 +93,18 @@ app.post("/incoming", (req, res) => {
     res.status(500).send("Error handling incoming call");
   }
 });
-// Update /startOutboundCall route
+
+/**
+ * @route POST /startOutboundCall
+ * @description Initiates an outbound call to a specified number
+ */
 app.post("/startOutboundCall", async (req, res) => {
   try {
     const { to } = req.body;
     if (!to) {
       return res.status(400).json({ error: "Phone number required" });
     }
-    const formattedNumber = to.startsWith("+") ? to : `+${to}`;
+
     const twimlContent = generateTwiML();
     const call = await client.calls.create({
       twiml: twimlContent,
@@ -130,7 +120,9 @@ app.post("/startOutboundCall", async (req, res) => {
   }
 });
 
-// WebSocket Handler
+/**
+ * WebSocket handler for real-time audio streaming
+ */
 app.ws("/connection", (ws) => {
   let streamSid;
   let callSid;
@@ -138,29 +130,27 @@ app.ws("/connection", (ws) => {
   let interactionCount = 0;
 
   // Initialize services
-  const gptService = new GptService();
   const streamService = new StreamService(ws);
   const transcriptionService = new TranscriptionService();
   const ttsService = new TextToSpeechService({});
 
-  // Cleanup function to properly close all services
+  /**
+   * Cleanup function to properly close all services
+   */
   const cleanup = () => {
     try {
-      transcriptionService.removeAllListeners();
-      gptService.removeAllListeners();
-      ttsService.removeAllListeners();
-      streamService.removeAllListeners();
-
-      // Clean up any ongoing processes
-      if (streamService.cleanup) streamService.cleanup();
-      if (transcriptionService.cleanup) transcriptionService.cleanup();
-      if (gptService.cleanup) gptService.cleanup();
-      if (ttsService.cleanup) ttsService.cleanup();
+      [transcriptionService, gptService, ttsService, streamService].forEach(
+        (service) => {
+          service.removeAllListeners();
+          if (service.cleanup) service.cleanup();
+        }
+      );
     } catch (err) {
       console.error("Cleanup error:", err);
     }
   };
 
+  // WebSocket message handler
   ws.on("message", (data) => {
     try {
       const msg = JSON.parse(data);
@@ -190,6 +180,7 @@ app.ws("/connection", (ws) => {
     }
   });
 
+  // Service event handlers
   transcriptionService.on("transcription", async (text) => {
     if (text) {
       try {
@@ -220,7 +211,7 @@ app.ws("/connection", (ws) => {
     marks.push(label);
   });
 
-  // Handle WebSocket closure events
+  // WebSocket error handlers
   ws.on("close", (code, reason) => {
     console.log(`WebSocket closed with code ${code} and reason: ${reason}`);
     cleanup();
@@ -233,36 +224,29 @@ app.ws("/connection", (ws) => {
   });
 });
 
-
-
-// Configure multer for audio file storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "../flask-server/OpenVoice/resources"); // Make sure this directory exists
-  },
-  filename: function (req, file, cb) {
-    cb(null, 'audio-' + Date.now() + '.wav')
-  }
-});
-
-const upload = multer({ storage: storage });
-
-// Add this endpoint to your Express routes
-app.post('/api/upload-audio', upload.single('audio'), (req, res) => {
+/**
+ * @route POST /api/clone-voice
+ * @description Clones a voice using ElevenLabs API
+ */
+app.post("/api/clone-voice", upload.single("file"), async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
-    }
-    res.json({ 
-      message: 'File uploaded successfully',
-      filename: req.file.filename 
+    const client = new ElevenLabsClient({
+      apiKey: process.env.ELEVENLABS_API_KEY,
     });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+
+    const response = await client.voices.add({
+      files: [req.file.buffer],
+      name: Date.now().toString(),
+    });
+
+    res.json(response);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: err.message });
   }
 });
 
-// Start Server
+// Start server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}/`);
 });
