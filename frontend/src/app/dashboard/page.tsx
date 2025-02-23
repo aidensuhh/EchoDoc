@@ -106,7 +106,7 @@ export default function Page() {
         }),
       });
 
-      
+
       console.log(JSON.stringify(patientData));
 
       if (!callResponse.ok) {
@@ -171,7 +171,7 @@ export default function Page() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Patient Agents</BreadcrumbPage>
+                  <BreadcrumbPage>Patients</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
