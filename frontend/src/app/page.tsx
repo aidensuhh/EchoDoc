@@ -219,9 +219,9 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="max-w-[1000px] mx-auto text-center space-y-8"
+              className="max-w-[1000px] mx-auto text-center space-y-6"
             >
-              <h1 className="text-[3.75rem] leading-[1.1] font-bold tracking-tight">
+              <h1 className="text-[5rem] leading-[1.1] font-bold tracking-tight mb-4">
                 <span className="bg-gradient-to-r from-gray-900 via-green-800 to-green-600 bg-clip-text text-transparent">
                   Revolutionizing
                 </span>
@@ -230,19 +230,23 @@ export default function Home() {
                   Patient Management
                 </span>
               </h1>
-              <p className="text-[1.25rem] text-gray-600 leading-[1.6] max-w-2xl mx-auto font-normal">
-                Empower your medical practice with AI-driven voice cloning technology.
+              <p className="text-[1.1rem] text-gray-600 leading-[1.6] max-w-[720px] mx-auto font-normal tracking-tight">
+                Empower your medical practice with AI-driven voice cloning technology. 
                 Streamline patient interactions, automate scheduling, and enhance care delivery.
               </p>
-              <div className="flex justify-center items-center gap-3 pt-2">
+              <div className="flex justify-center items-center gap-3 pt-5">
                 <Button 
                   size="lg" 
                   className="
-                    h-11 px-6
-                    bg-green-600 hover:bg-green-700
-                    text-white font-medium
-                    rounded-md
+                    px-6 h-10
+                    bg-green-600
+                    hover:bg-green-700
+                    text-white text-[0.925rem] font-medium
+                    rounded
                     transition-all duration-200
+                    shadow-[0_1px_2px_rgba(0,0,0,0.05)]
+                    hover:shadow-[0_2px_4px_rgba(0,0,0,0.05)]
+                    flex items-center justify-center
                   "
                 >
                   Start Free Trial
@@ -251,12 +255,14 @@ export default function Home() {
                   size="lg" 
                   variant="outline" 
                   className="
-                    h-11 px-6
+                    px-6 h-10
                     border border-gray-200
-                    text-gray-700 font-medium
-                    hover:bg-gray-50
-                    rounded-md
+                    text-gray-600 text-[0.925rem] font-medium
+                    hover:text-gray-800 hover:border-gray-300
+                    hover:bg-gray-50/50
+                    rounded
                     transition-all duration-200
+                    flex items-center justify-center
                   "
                 >
                   Watch Demo
