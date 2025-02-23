@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { BentoGrid, BentoCard } from "@/components/ui/bento-grid";
-import { Brain, Calendar, FileText, Mic2, Phone, UserCog } from "lucide-react";
+import { Brain, Calendar, FileText, Mic2, Phone, UserCog, Stethoscope, Pill, Syringe, Thermometer, HeartPulse } from "lucide-react";
 import Bento from "@/components/Bento";
 import { Footer } from "@/components/footer";
+import React from "react";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -120,29 +121,82 @@ const bentoFeatures = [
 ];
 
 export default function Home() {
-  return (
-    <div className="min-h-screen bg-[#f8faff]">
-      {/* Base layer */}
-      <div className="fixed inset-0 bg-gradient-to-b from-white/40 via-blue-50/20 to-white/40" />
-      
-      {/* Blur layer */}
-      <div 
-        className="fixed inset-0 backdrop-blur-[6px]"
-        style={{
-          background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(236, 246, 255, 0.6), rgba(255, 255, 255, 0.8))',
-          maskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)',
-          WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)',
-        }}
-      />
+  const [dimensions, setDimensions] = React.useState({ width: 1200, height: 800 });
 
-      {/* Mesh gradient for texture */}
+  React.useEffect(() => {
+    setDimensions({
+      width: window.innerWidth,
+      height: window.innerHeight
+    });
+
+    const handleResize = () => {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-white via-blue-50/10 to-green-50/10 overflow-hidden">
+      {/* Enhanced gradient background */}
+      <div className="fixed inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-green-50/30 to-blue-50/20 backdrop-blur-[12px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(22,163,74,0.15),transparent_70%)]" />
+      </div>
+
+      {/* Floating medical icons with constrained areas */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        {[...Array(12)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute text-green-700/40" // Increased visibility
+            initial={{
+              // Constrain icons to the sides and avoid center content
+              x: Math.random() > 0.5 
+                ? Math.random() * dimensions.width * 0.3 // Left 30%
+                : dimensions.width * 0.7 + Math.random() * dimensions.width * 0.3, // Right 30%
+              y: Math.random() * dimensions.height,
+              scale: Math.random() * 0.5 + 0.5,
+              rotate: Math.random() * 360,
+            }}
+            animate={{
+              x: [null, 
+                Math.random() > 0.5
+                  ? Math.random() * dimensions.width * 0.3
+                  : dimensions.width * 0.7 + Math.random() * dimensions.width * 0.3
+              ],
+              y: [null, Math.random() * dimensions.height],
+              rotate: [null, Math.random() * 360],
+            }}
+            transition={{
+              duration: Math.random() * 20 + 30, // Slower movement
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          >
+            {[
+              <Stethoscope key="stethoscope1" size={52} className="filter drop-shadow-[0_2px_8px_rgba(22,163,74,0.4)]" />,
+              <Pill key="pill" size={44} className="filter drop-shadow-[0_2px_8px_rgba(22,163,74,0.4)]" />,
+              <Syringe key="syringe" size={48} className="filter drop-shadow-[0_2px_8px_rgba(22,163,74,0.4)]" />,
+              <Stethoscope key="stethoscope2" size={50} className="filter drop-shadow-[0_2px_8px_rgba(22,163,74,0.4)]" />,
+              <Thermometer key="thermometer" size={46} className="filter drop-shadow-[0_2px_8px_rgba(22,163,74,0.4)]" />,
+              <HeartPulse key="heartpulse" size={52} className="filter drop-shadow-[0_2px_8px_rgba(22,163,74,0.4)]" />,
+            ][i % 6]}
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Subtle mesh gradient overlay */}
       <div 
         className="fixed inset-0 opacity-30"
         style={{
           backgroundImage: `
-            radial-gradient(at 80% 0%, rgb(236, 246, 255) 0px, transparent 50%),
-            radial-gradient(at 0% 50%, rgb(236, 246, 255) 0px, transparent 50%),
-            radial-gradient(at 80% 50%, rgb(236, 246, 255) 0px, transparent 50%)
+            radial-gradient(at 20% 20%, rgba(22, 163, 74, 0.1) 0px, transparent 50%),
+            radial-gradient(at 80% 80%, rgba(59, 130, 246, 0.1) 0px, transparent 50%)
           `
         }}
       />
@@ -231,8 +285,7 @@ export default function Home() {
                 </span>
               </h1>
               <p className="text-[1.1rem] text-gray-600 leading-[1.6] max-w-[720px] mx-auto font-normal tracking-tight">
-                Empower your medical practice with AI-driven voice cloning technology. 
-                Streamline patient interactions, automate scheduling, and enhance care delivery.
+                AI that multiplies you—from 1 voice to 100 patient conversations. <br />10-minute setup today, full schedule by breakfast tomorrow.
               </p>
               <div className="flex justify-center items-center gap-3 pt-5">
                 <Button 
@@ -241,7 +294,7 @@ export default function Home() {
                     px-6 h-10
                     bg-green-600
                     hover:bg-green-700
-                    text-white text-[0.925rem] font-medium
+                    text-white text-[0.925rem] font-bold
                     rounded
                     transition-all duration-200
                     shadow-[0_1px_2px_rgba(0,0,0,0.05)]
@@ -257,7 +310,7 @@ export default function Home() {
                   className="
                     px-6 h-10
                     border border-gray-200
-                    text-gray-600 text-[0.925rem] font-medium
+                    text-gray-600 text-[0.925rem] font-bold
                     hover:text-gray-800 hover:border-gray-300
                     hover:bg-gray-50/50
                     rounded
