@@ -250,47 +250,59 @@ export default function Home() {
                 </span>
               </Link>
             </motion.div>
-            <div className="hidden md:flex items-center gap-8">
-              {["Features", "About", "Contact"].map((item) => (
-                <motion.div
-                  key={item}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Link
-                    href={`/${item.toLowerCase()}`}
-                    className="
-                      text-sm font-medium text-gray-600 
-                      hover:text-gray-900 
-                      transition-all duration-300
-                      relative
-                      after:content-['']
-                      after:absolute
-                      after:w-0
-                      after:h-[2px]
-                      after:bg-green-600
-                      after:left-0
-                      after:-bottom-1
-                      after:transition-all
-                      after:duration-300
-                      hover:after:w-full
-                    "
+            <div className="hidden md:flex items-center gap-6">
+              {/* Navigation Links */}
+              <nav className="flex items-center gap-8 mr-4">
+                {["Features", "About", "Contact"].map((item) => (
+                  <motion.div
+                    key={item}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    {item}
-                  </Link>
-                </motion.div>
-              ))}
+                    <Link
+                      href={`/${item.toLowerCase()}`}
+                      className="
+                        text-sm font-medium
+                        text-gray-600 
+                        hover:text-gray-900 
+                        transition-all duration-300
+                        relative
+                        py-2
+                        after:content-['']
+                        after:absolute
+                        after:w-0
+                        after:h-[2px]
+                        after:bg-green-500
+                        after:left-0
+                        after:-bottom-[2px]
+                        after:transition-all
+                        after:duration-300
+                        hover:after:w-full
+                      "
+                    >
+                      {item}
+                    </Link>
+                  </motion.div>
+                ))}
+              </nav>
+
+              {/* Login Button */}
               <Link href="/sign-in">
                 <Button 
                   size="sm" 
                   className="
-                    bg-gradient-to-r from-green-600 to-green-500 
-                    hover:from-green-700 hover:to-green-600
-                    text-white px-6 py-2 rounded-md
-                    transition-all duration-300 shadow-sm 
+                    bg-gradient-to-r from-green-500 to-green-400 
+                    hover:from-green-600 hover:to-green-500
+                    text-white px-8 py-2 
+                    h-9
+                    rounded-full
+                    transition-all duration-300 
+                    shadow-sm 
                     hover:shadow-[0_4px_12px_rgba(22,163,74,0.15)]
-                    border border-green-400/20 font-bold
+                    border border-green-400/20 
+                    font-bold
                     transform hover:scale-[1.02]
+                    text-sm
                   "
                 >
                   Login
