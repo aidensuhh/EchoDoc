@@ -8,8 +8,8 @@ import { motion } from "framer-motion";
 import { BentoGrid, BentoCard } from "@/components/ui/bento-grid";
 import { Brain, Calendar, FileText, Mic2, Phone, UserCog, Stethoscope, Pill, Syringe, Thermometer, HeartPulse } from "lucide-react";
 import Bento from "@/components/Bento";
-import { Footer } from "@/components/footer";
 import React from "react";
+import { Footer } from "@/components/footer";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },

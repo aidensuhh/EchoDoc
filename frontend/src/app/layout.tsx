@@ -11,10 +11,6 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "EchoDoc - AI-Powered Patient Care Management",
   description: "Revolutionizing patient care with AI voice cloning technology",
-  icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
-  },
 };
 
 export default function RootLayout({
@@ -26,7 +22,8 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className={montserrat.variable}>
         <head>
-          <link rel="icon" href="/logo.png" />
+          <link rel="icon" type="image/png" sizes="32x32" href="/logo.png" />
+          <link rel="icon" type="image/png" sizes="16x16" href="/logo.png" />
           <link rel="apple-touch-icon" href="/logo.png" />
         </head>
         <body>
