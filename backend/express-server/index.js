@@ -234,7 +234,12 @@ app.ws("/connection", (ws) => {
 
 app.get("/api/get-patient-data", async (req, res) => {
   try {
-    const { data, error } = await supabase().from("patient-data").select("*").where("id", "eq", req.body.id);
+    const { id } = req.query; // Access the id query param
+    const { data, error } = await supabase
+      .from("patient_data")
+      .select("*")
+      .eq("id", parseInt(id, 10));
+
     if (error) return res.status(400).json({ error: error.message });
     res.json(data);
   } catch (err) {
