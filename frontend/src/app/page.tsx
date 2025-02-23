@@ -108,58 +108,86 @@ export default function Home() {
     <div className="min-h-screen bg-[#fafafa] overflow-hidden">
       {/* Base gradient layer */}
       <div className="fixed inset-0">
-        <div 
+        <div
           className="absolute inset-0 bg-gradient-to-br from-white via-green-50/5 to-blue-50/5"
           style={{
-            backdropFilter: 'blur(60px)',
-          }} 
+            backdropFilter: "blur(60px)",
+          }}
         />
       </div>
 
       {/* Floating medical icons with constrained areas */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        {[...Array(8)].map((_, i) => ( // Reduced number of icons
-          <motion.div
-            key={i}
-            className="absolute text-green-600/20" // Adjusted color and opacity
-            initial={{
-              x: Math.random() > 0.5 
-                ? Math.random() * dimensions.width * 0.2 // Left 20%
-                : dimensions.width * 0.8 + Math.random() * dimensions.width * 0.2, // Right 20%
-              y: Math.random() * dimensions.height,
-              scale: Math.random() * 0.3 + 0.3, // Smaller icons
-              rotate: Math.random() * 360,
-            }}
-            animate={{
-              x: [null, 
-                Math.random() > 0.5
-                  ? Math.random() * dimensions.width * 0.2
-                  : dimensions.width * 0.8 + Math.random() * dimensions.width * 0.2
-              ],
-              y: [null, Math.random() * dimensions.height],
-              rotate: [null, Math.random() * 360],
-            }}
-            transition={{
-              duration: Math.random() * 25 + 35, // Slower movement
-              repeat: Infinity,
-              ease: "linear",
-            }}
-          >
-            {[
-              <Stethoscope key="stethoscope1" size={48} className="filter drop-shadow-[0_2px_10px_rgba(22,163,74,0.2)]" />,
-              <Pill key="pill" size={40} className="filter drop-shadow-[0_2px_10px_rgba(22,163,74,0.2)]" />,
-              <Syringe key="syringe" size={44} className="filter drop-shadow-[0_2px_10px_rgba(22,163,74,0.2)]" />,
-              <HeartPulse key="heartpulse" size={48} className="filter drop-shadow-[0_2px_10px_rgba(22,163,74,0.2)]" />,
-            ][i % 4]}
-          </motion.div>
-        ))}
+        {[...Array(15)].map(
+          (
+            _,
+            i // Reduced number of icons
+          ) => (
+            <motion.div
+              key={i}
+              className="absolute text-green-600/20" // Adjusted color and opacity
+              initial={{
+                x:
+                  Math.random() > 0.5
+                    ? Math.random() * dimensions.width * 0.2 // Left 20%
+                    : dimensions.width * 0.8 +
+                      Math.random() * dimensions.width * 0.2, // Right 20%
+                y: Math.random() * dimensions.height,
+                scale: Math.random() * 0.3 + 0.3, // Smaller icons
+                rotate: Math.random() * 360,
+              }}
+              animate={{
+                x: [
+                  null,
+                  Math.random() > 0.5
+                    ? Math.random() * dimensions.width * 0.2
+                    : dimensions.width * 0.8 +
+                      Math.random() * dimensions.width * 0.2,
+                ],
+                y: [null, Math.random() * dimensions.height],
+                rotate: [null, Math.random() * 360],
+              }}
+              transition={{
+                duration: Math.random() * 25 + 35, // Slower movement
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            >
+              {
+                [
+                  <Stethoscope
+                    key="stethoscope1"
+                    size={150}
+                    className="filter drop-shadow-[0_2px_10px_rgba(22,163,74,0.2)]"
+                  />,
+                  <Pill
+                    key="pill"
+                    size={150}
+                    className="filter drop-shadow-[0_2px_10px_rgba(22,163,74,0.2)]"
+                  />,
+                  <Syringe
+                    key="syringe"
+                    size={150}
+                    className="filter drop-shadow-[0_2px_10px_rgba(22,163,74,0.2)]"
+                  />,
+                  <HeartPulse
+                    key="heartpulse"
+                    size={150}
+                    className="filter drop-shadow-[0_2px_10px_rgba(22,163,74,0.2)]"
+                  />,
+                ][i % 4]
+              }
+            </motion.div>
+          )
+        )}
       </div>
 
       {/* Subtle gradient overlay */}
-      <div 
+      <div
         className="fixed inset-0 opacity-20"
         style={{
-          background: 'radial-gradient(circle at 50% 50%, rgba(22, 163, 74, 0.08), transparent 70%)'
+          background:
+            "radial-gradient(circle at 50% 50%, rgba(22, 163, 74, 0.08), transparent 70%)",
         }}
       />
 
@@ -233,8 +261,8 @@ export default function Home() {
 
               {/* Login Button */}
               <Link href="/sign-in">
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   className="
                     bg-gradient-to-r from-green-500 to-green-400 
                     hover:from-green-600 hover:to-green-500
@@ -265,6 +293,15 @@ export default function Home() {
               transition={{ duration: 0.8 }}
               className="max-w-[1000px] mx-auto text-center space-y-6"
             >
+              <div className="flex justify-center items-center">
+                <img
+                  src="/logo.png"
+                  alt="EchoDoc Logo"
+                  width={62}
+                  height={62}
+                  className="h-52 w-52"
+                />
+              </div>
               <h1 className="text-[5rem] leading-[1.1] font-bold tracking-tight mb-4">
                 <span className="bg-gradient-to-r from-gray-900 via-green-800 to-green-600 bg-clip-text text-transparent">
                   Revolutionizing
@@ -275,12 +312,13 @@ export default function Home() {
                 </span>
               </h1>
               <p className="text-[1.1rem] text-gray-600 leading-[1.6] max-w-[720px] mx-auto font-normal tracking-tight">
-                AI that multiplies you—from 1 voice to 100 patient conversations. <br />
+                AI that multiplies you—from 1 voice to 100 patient
+                conversations. <br />
                 10-minute setup today, full schedule by breakfast tomorrow.
               </p>
               <div className="flex justify-center items-center gap-3 pt-5">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="
                     px-6 h-10
                     bg-gradient-to-r from-green-600 to-green-500
@@ -297,9 +335,9 @@ export default function Home() {
                 >
                   Start Free Trial
                 </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
+                <Button
+                  size="lg"
+                  variant="outline"
                   className="
                     px-6 h-10
                     border border-gray-200
@@ -326,18 +364,21 @@ export default function Home() {
                 {
                   icon: <Mic2 className="h-6 w-6 text-green-600" />,
                   title: "Voice Cloning",
-                  description: "Create perfect digital replicas of your voice for consistent patient interactions."
+                  description:
+                    "Advanced technology to create precise digital replicas of your voice, ensuring consistent and personalized patient interactions.",
                 },
                 {
                   icon: <Calendar className="h-6 w-6 text-green-600" />,
                   title: "Smart Scheduling",
-                  description: "Automated appointment booking with real-time calendar synchronization."
+                  description:
+                    "Seamless automated appointment booking system with real-time calendar synchronization for enhanced scheduling efficiency.",
                 },
                 {
                   icon: <Brain className="h-6 w-6 text-green-600" />,
                   title: "AI-Powered Analysis",
-                  description: "Intelligent processing of patient data for better care decisions."
-                }
+                  description:
+                    "Intelligent processing of patient data for diagnoses, personalized treatment plans, and better healthcare decision-making.",
+                },
               ].map((feature, index) => (
                 <motion.div
                   key={index}
@@ -346,12 +387,12 @@ export default function Home() {
                   whileInView="visible"
                   viewport={{ once: true }}
                   custom={index}
-                  whileHover={{ 
+                  whileHover={{
                     scale: 1.02,
-                    transition: { duration: 0.2 }
+                    transition: { duration: 0.2 },
                   }}
                 >
-                  <Card 
+                  <Card
                     className="
                       p-6 bg-white/80 rounded-lg border border-gray-100
                       hover:border-green-200 transition-all duration-300 
@@ -359,11 +400,11 @@ export default function Home() {
                       hover:bg-gradient-to-br hover:from-white hover:to-green-50/30
                     "
                   >
-                    <motion.div 
+                    <motion.div
                       className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center mb-4"
-                      whileHover={{ 
+                      whileHover={{
                         rotate: [0, -10, 10, -10, 0],
-                        transition: { duration: 0.5 }
+                        transition: { duration: 0.5 },
                       }}
                     >
                       {feature.icon}
@@ -404,14 +445,36 @@ export default function Home() {
                   ease: "linear",
                 }}
               >
-                {[
-                  <FileText key="file" size={48} className="text-green-500/20" />,
-                  <Brain key="brain" size={44} className="text-green-600/20" />,
-                  <Calendar key="calendar" size={40} className="text-green-400/20" />,
-                  <UserCog key="user" size={46} className="text-green-500/20" />,
-                  <Phone key="phone" size={42} className="text-green-600/20" />,
-                  <Mic2 key="mic" size={48} className="text-green-400/20" />,
-                ][i]}
+                {
+                  [
+                    <FileText
+                      key="file"
+                      size={48}
+                      className="text-green-500/20"
+                    />,
+                    <Brain
+                      key="brain"
+                      size={44}
+                      className="text-green-600/20"
+                    />,
+                    <Calendar
+                      key="calendar"
+                      size={40}
+                      className="text-green-400/20"
+                    />,
+                    <UserCog
+                      key="user"
+                      size={46}
+                      className="text-green-500/20"
+                    />,
+                    <Phone
+                      key="phone"
+                      size={42}
+                      className="text-green-600/20"
+                    />,
+                    <Mic2 key="mic" size={48} className="text-green-400/20" />,
+                  ][i]
+                }
               </motion.div>
             ))}
           </div>

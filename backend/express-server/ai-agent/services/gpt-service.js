@@ -5,7 +5,10 @@ import OpenAI from "openai";
 class GptService extends EventEmitter {
   constructor(context) {
     super();
-    this.openai = new OpenAI();
+    this.openai = new OpenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+      baseURL: process.env.GEMINI_API_BASE_URL,
+    });
     this.userContext = [
       {
         role: "system",
