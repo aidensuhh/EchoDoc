@@ -1,4 +1,4 @@
-# **EchoDoc**
+# **EchoDoc - AI Patient Management System**
 
 ## 💡 Inspiration 
 
@@ -52,10 +52,6 @@ Future developments include:
 - Continuing to build the calendar integration system.
 
 How to run it:
-cd backend/express-server then run npm install then npm run dev
-
-then another terminal, cd frontend then run npm install then npm run dev
-
-then in another terminal you'll need to run ngrok or unicorn to expose the backend server so twilio can actually call it.
-
-then fill in the environment variables in an .env file in backend folder.
+1. cd backend/express-server -> npm install -> npm run dev to turn the server on.
+2. In another terminal, cd frontend -> run npm install -> npm run dev.
+3. In another terminal, you will need to run ngrok or unicorn to expose the backend server so twilio can actually call it, then fill in the environment variables in an .env file in backend folder.
