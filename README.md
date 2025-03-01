@@ -51,7 +51,7 @@ Future developments include:
 - Integrating with existing Electronic Health Record (EHR) systems
 - Continuing to build the calendar integration system.
 
-How to run it:
+## 🚀 How to run it:
 1. cd backend/express-server -> npm install -> npm run dev to turn the server on.
 2. In another terminal, cd frontend -> run npm install -> npm run dev.
 3. In another terminal, you will need to run ngrok or unicorn to expose the backend server so twilio can actually call it, then fill in the environment variables in an .env file in backend folder.
